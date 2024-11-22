@@ -17,8 +17,11 @@ import { BiListUl } from "react-icons/bi";
 import Dropdown from "../components/Dropdown";
 import TotalDashboard from "../components/TotalDashboard";
 import { MdSpaceDashboard } from "react-icons/md";
-
+import ReportsTable from "./NewReports";
+import AgentReportsTable from "./AgentReport";
 import FullscreenToggle from "../components/FullScreen";
+import { HiDocumentReport ,HiOutlineDocumentReport  } from "react-icons/hi";
+import AgentResponseTable from "./AgentResponseTime";
 
 const LeaderBoardDashboard = () => {
   const [selectedLeader, setSelectedLeader] = useState(leaderOptions[0]);
@@ -71,10 +74,10 @@ const LeaderBoardDashboard = () => {
                   onClick={() => handleSelectionChange(option)}
                   style={{ cursor: "pointer" }}
                 >
-                  <MdSpaceDashboard
-                    style={{ fontSize: "20px", color: "#1f7bc1" }}
-                  />
-                  {option.label}
+                  <span style={{ fontSize: "20px", color: "#1f7bc1", marginRight: "8px" }}>
+            {option.icon}
+          </span>
+          {option.label}
                 </li>
               ))}
             </ul>
@@ -98,17 +101,21 @@ const LeaderBoardDashboard = () => {
               </div>
             </div>
 
-            {selectedLeader.value === "leaders5" ? (
+            {selectedLeader.value === "leaders8" ? (
+              <AgentResponseTable />
+            ) :selectedLeader.value === "leaders7" ? (
+              <AgentReportsTable />
+            ) : selectedLeader.value === "leaders6" ? (
+              <ReportsTable />
+            ) : selectedLeader.value === "leaders5" ? (
               <TotalDashboard data={sampleData} />
             ) : (
               <>
-                {/* Pass selectedLeader to the LeaderbordCard */}
                 <LeaderbordCard
                   data={sampleData}
                   selectedLeader={selectedLeader}
                 />
 
-                {/* Check for 'leaders2', 'leaders3', 'leaders4', and render corresponding data */}
                 {selectedLeader.value === "leaders2" ? (
                   <SecondLeaderboardCard
                     data={secondsampleData1}
@@ -120,13 +127,11 @@ const LeaderBoardDashboard = () => {
                     title="Viewing Data"
                   />
                 ) : selectedLeader.value === "leaders4" ? (
-                  /* Handle new case for 'leaders4' and render secondsampleData3 */
                   <SecondLeaderboardCard
                     data={secondsampleData3}
                     title="New Data for Leader 4"
                   />
                 ) : (
-                  /* Default case rendering the initial dataset */
                   <SecondLeaderboardCard
                     data={secondsampleData}
                     title="Default Data"
@@ -168,6 +173,7 @@ LeaderBoardDashboard.propTypes = {
   }).isRequired,
 };
 export default LeaderBoardDashboard;
+
 
 const initialSampleData = [
   {
@@ -224,6 +230,7 @@ const initialSampleData = [
     closed: 9,
     dealPercentage: "80%",
   },
+  
 ];
 const initialSampleData1 = [
   {
@@ -656,11 +663,14 @@ const thirdsampleData3 = [
 ];
 
 const leaderOptions = [
-  { label: "Deals Dashboard", value: "leaders" },
-  { label: "Calls Dashboard", value: "leaders2" },
-  { label: "Viewings Dashboard", value: "leaders3" },
-  { label: "Listing Dashboard", value: "leaders4" },
-  { label: "Total Dashboard", value: "leaders5" },
+  { label: "Deals Dashboard", value: "leaders" ,icon: <MdSpaceDashboard />},
+  { label: "Calls Dashboard", value: "leaders2", icon: <MdOutlineCall  />  },
+  { label: "Viewings Dashboard", value: "leaders3", icon: <CiViewBoard /> },
+  { label: "Listing Dashboard", value: "leaders4",icon: <BiListUl />},
+  { label: "Total Dashboard", value: "leaders5",icon: <MdSpaceDashboard /> },
+  { label: "Reports", value: "leaders6" ,icon:<HiDocumentReport />},
+  { label: "Agent Reports", value: "leaders7",icon:<HiOutlineDocumentReport  /> },
+  { label: "Agent Response Time", value: "leaders8",icon:<HiOutlineDocumentReport  /> },
 ];
 
 const everyoneOptions = [

@@ -39,7 +39,7 @@ leader-options {
   display: flex;
 }
 .leader-options li svg{
-  color: #fff;
+  font-size: 24px;
   padding-right: 10px;
 }
 .leader-options li:last-child {

@@ -8,6 +8,7 @@ import dollarcoin from "../images/dollar-coin.png";
 import iconlabel from "../images/label.png";
 import Dropdown from "./components/Dropdown";
 import TotalDashboard from "./components/TotalDashboard";
+import NewReports from './components/NewReports';
 
 import FullscreenToggle from './components/FullScreen';
 // import ToggleComponent from './components/ToggleComponent';
@@ -70,17 +71,23 @@ const LeaderBoardDashboard = () => {
           </div>
           
         </div>
-        {/* <div><ToggleComponent/></div> */}
-        {/* Render TotalDashboard only when the 'Total Dashboard' option is selected */}
-        {selectedLeader.value === 'leaders5' ? (
+        {selectedLeader.value === 'leaders5' && (
           <TotalDashboard data={sampleData} />
-        ) : (
+        )}
+
+        {selectedLeader.value === 'leaders6' && (
+          <NewReports data={sampleData} />
+        )}
+
+        {(selectedLeader.value !== 'leaders5' && selectedLeader.value !== 'leaders6') && (
           <>
             <LeaderbordCard data={sampleData} />
             <SecondLeaderboardCard data={secondsampleData} />
             <ThirdLeaderboardCard data={thirdsampleData} />
           </>
         )}
+
+        
         
       </div>
     </>
@@ -422,7 +429,8 @@ const leaderOptions = [
   { label: 'Calls Dashboard', value: 'leaders2' },
   { label: 'Viewings Dashboard', value: 'leaders3' } ,   
   { label: 'Listing Dashboard', value: 'leaders4' }, 
-  { label: 'Total Dashboard', value: 'leaders5' }
+  { label: 'Total Dashboard', value: 'leaders5' },
+  { label: 'Reports', value: 'leaders6' }
 ];
 
 
