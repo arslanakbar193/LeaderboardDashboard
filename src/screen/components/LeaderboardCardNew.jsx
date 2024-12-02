@@ -19,15 +19,175 @@ import TotalDashboard from "../components/TotalDashboard";
 import { MdSpaceDashboard } from "react-icons/md";
 import ReportsTable from "./NewReports";
 import AgentReportsTable from "./AgentReport";
+import { fetchWithTokenRetry } from '../components/common/CommonFunctions';
+
 import FullscreenToggle from "../components/FullScreen";
 import { HiDocumentReport ,HiOutlineDocumentReport  } from "react-icons/hi";
 import AgentResponseTable from "./AgentResponseTime";
 
 const LeaderBoardDashboard = () => {
+  const ApiUrl = 'http://localhost:54103';
   const [selectedLeader, setSelectedLeader] = useState(leaderOptions[0]);
   const [selectedMember, setSelectedMember] = useState(everyoneOptions[0]);
   const [selectedMonth, setSelectedMonth] = useState(everymonthOptions[0]);
-  const [sampleData, setSampleData] = useState(initialSampleData);
+  const [sampleData, setSampleData] = useState([]);
+  const [token, setToken] = useState('');
+
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (window.ZoneMasterGlobels && window.application) {
+        setEnvironment();
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+
+
+  useEffect(() => {
+    if (token && token !== '') {
+      console.log("Token received");
+      console.log(token);
+      // console.log(ApiUrl);
+      getUserData();
+      getUserData1();
+
+    }
+  }, [token]);
+
+  const getUserData = async () => {
+    try {
+      const response = await fetchWithTokenRetry(
+        ApiUrl + '/leaderboard/KPI',
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': token
+          }
+        }
+      );
+      // console.log(response);
+      if (response && response.ok) {
+        const data = await response.json();
+        // console.log(data);
+       
+        // setInitialSampleData(data.sort((a, b) => b.totalDeals - a.totalDeals).slice(0, 3) // Sorting by totalDeals in descending order
+        // .map((user, index) => ({
+        //   name: user.name,
+        //   profile: Avatar, // Assign the Avatar here
+        //   rank: (index + 1).toString(),
+        //   totalDeals: user.totalDeals,
+        //   totalCalls: user.totalCalls,
+        //   totalViewings: user.totalViewings,
+        //   totalListings: user.totalListings,
+        //   totalEarning: user.totalDeals, // Set totalEarning as totalDeals for this set
+        //   status: 'Total Deals',
+        //   icon: dollar, // Assign the dollar icon here
+        //   icondollar: dollarcoin,
+        //   iconlabel: iconlabel,
+        //   commission: user.commission,
+        //   dealAverage: user.dealAverage,
+        //   closed: user.closed,
+        //   dealPercentage: user.dealPercentage,
+        // })));
+
+        // setInitialSampleData1(data.map((item, index) => ({
+        //   name: item.name,
+        //   profile: Avatar,
+        //   rank: (index + 1).toString(),
+        //   totalDeals: parseInt(item.totalDeals),
+        //   totalCalls: parseInt(item.totalCalls),  
+        //   totalViewings: parseInt(item.totalViewings),
+        //   totalListings: parseInt(item.totalListings),
+        //   totalEarning: item.totalCalls,  
+        //   status: "Total Calls",
+        //   icon: dollar,
+        //   icondollar: dollarcoin,
+        //   iconlabel: iconlabel,
+        //   commission: item.commission,
+        //   dealAverage: item.dealAverage,
+        //   closed: item.closed,
+        //   dealPercentage: item.dealPercentage
+        // })).sort((a, b) => b.totalCalls - a.totalCalls).slice(0, 3));
+
+        // setInitialSampleData2(data.map((item, index) => ({
+        //   name: item.name,
+        //   profile: Avatar,
+        //   rank: (index + 1).toString(),
+        //   totalDeals: parseInt(item.totalDeals),
+        //   totalCalls: parseInt(item.totalCalls),  
+        //   totalViewings: parseInt(item.totalViewings),
+        //   totalListings: parseInt(item.totalListings),
+        //   totalEarning: item.totalViewings,  
+        //   status: "Total Viewings",
+        //   icon: dollar,
+        //   icondollar: dollarcoin,
+        //   iconlabel: iconlabel,
+        //   commission: item.commission,
+        //   dealAverage: item.dealAverage,
+        //   closed: item.closed,
+        //   dealPercentage: item.dealPercentage
+        // })).sort((a, b) => b.totalViewings - a.totalViewings).slice(0, 3));
+
+        // setInitialSampleData3(data.map((item, index) => ({
+        //   name: item.name,
+        //   profile: Avatar,
+        //   rank: (index + 1).toString(),
+        //   totalDeals: parseInt(item.totalDeals),
+        //   totalCalls: parseInt(item.totalCalls),  
+        //   totalViewings: parseInt(item.totalViewings),
+        //   totalListings: parseInt(item.totalListings),
+        //   totalEarning: item.totalListings,  
+        //   status: "Total Listing",
+        //   icon: dollar,
+        //   icondollar: dollarcoin,
+        //   iconlabel: iconlabel,
+        //   commission: item.commission,
+        //   dealAverage: item.dealAverage,
+        //   closed: item.closed,
+        //   dealPercentage: item.dealPercentage
+        // })).sort((a, b) => b.totalListings - a.totalListings).slice(0, 3));
+
+        // console.log(initialSampleData);
+        // console.log(initialSampleData1);
+        // console.log(initialSampleData2);
+        // console.log(initialSampleData3);
+
+      } else {
+        console.error("Failed to fetch data:", response.status, response.statusText);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  const getUserData1 = async () => {
+    try {
+      const response = await fetchWithTokenRetry(
+        ApiUrl + '/leaderboard',
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': token
+          }
+        }
+      );
+      if (response && response.ok) {
+        const data = await response.json();
+        console.log(data, "Leaderbord data");
+
+      } else {
+        console.error("Failed to fetch data:", response.status, response.statusText);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     if (selectedLeader.value === "leaders") {
@@ -48,6 +208,16 @@ const LeaderBoardDashboard = () => {
       ]);
     }
   }, [selectedLeader]);
+
+  const setEnvironment = () => {
+    if (process.env.NODE_ENV === 'development') {
+      setToken('bearer hosLKzrH8zEyEUq9KLgo6DOV-tWq67D5tGedfoQW7zM_dUuNIpuq4fRSp2tbafk2z7UrKzTnfao-XhoKWin6zwz2igXLMTvnW_3nw5jPnT4um3J1_EtNnRhoFIEzlNUAFOn4G_fipnEYMBiYQa0KhfBwmJ1J4UoJdexYT-8qj86p6J79LK3AAoRNIdY2rZbmbPudLxLiCLxO9FCD3VFcWMN0q-wqFuyvqXFz7ONZ2Mk1ok43C1cBHjYa-MBxnQxu4x0L2um6BjIG16GkS1BDJkdvJLi1vfgjA_42bozCh5oPuRraXTbj20AKOqHDT1WWnoZyEYgmt3vl7HsuznIpDpxDXD2k9b-tTCB9hcom1M5F-vhT7Xk2v7MmI01M6rZLykgBY4TjPfzUHuUO6tlzU2_KrrUrVIRC_Y4rvtZeA3qhCgM4d2iZvyC9EzW3DM5nl9TTqWU05BUlvHCoqlFbX2xVHR7mhHhUGq66h4iMV44ke0Zd01T_eiFjOC9C94_CNM5A3HSbhYZirPdzEL2QEvBweZZh3tBzMxD0kFd85gM');
+    }
+    else {
+      setToken(`Bearer ${JSON.parse(localStorage.jStorage)[window.parent.application.context.get_apiTokenKey()]}`);
+    }
+  }
+
 
   const handleSelectionChange = (newSelection) => {
     setSelectedLeader(newSelection);
@@ -174,7 +344,6 @@ LeaderBoardDashboard.propTypes = {
 };
 export default LeaderBoardDashboard;
 
-
 const initialSampleData = [
   {
     name: "Emily Williams",
@@ -230,7 +399,6 @@ const initialSampleData = [
     closed: 9,
     dealPercentage: "80%",
   },
-  
 ];
 const initialSampleData1 = [
   {
