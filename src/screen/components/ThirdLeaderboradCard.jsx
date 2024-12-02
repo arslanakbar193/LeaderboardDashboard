@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import RangeSlider from "./RangeSlider";
 import { CiDollar } from "react-icons/ci";
 import { BsCash } from "react-icons/bs";
@@ -9,12 +9,34 @@ import { CiViewBoard } from "react-icons/ci";
 import { BiListUl } from "react-icons/bi";
 
 const ThirdLeaderboardCard = ({ data, type }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
+
+  // Calculate the indices for the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentData = data.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Handle page change
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
     <div className="card-wrapper card-wrapper-third">
       <div className="card-items">
-        {data &&
-          data.length > 0 &&
-          data.map((item, index) => (
+        {currentData &&
+          currentData.length > 0 &&
+          currentData.map((item, index) => (
             <div className="cards" key={index}>
               <div className="card-left center-items">
                 <div>
@@ -65,7 +87,7 @@ const ThirdLeaderboardCard = ({ data, type }) => {
                     </>
                   ) : (
                     <>
-                     <div className="flex align-center pl-5">
+                      <div className="flex align-center pl-5">
                         <CiDollar style={{ fontSize: "25", color: "#1f7bc1" }} />
                         <span>{item.dealAverage ?? "N/A"}</span>
                       </div>
@@ -73,7 +95,7 @@ const ThirdLeaderboardCard = ({ data, type }) => {
                         <BsCash style={{ fontSize: "25", color: "#1f7bc1" }} />
                         <span>{item.commission ?? "N/A"}</span>
                       </div>
-                     
+
                       <div className="flex align-center label-image">
                         <MdLabelOutline style={{ fontSize: "25", color: "#1f7bc1" }} />
                         <span>{item.closed ?? "N/A"}</span>
@@ -89,6 +111,20 @@ const ThirdLeaderboardCard = ({ data, type }) => {
             </div>
           ))}
       </div>
+      {/* Pagination Controls */}
+      {data.length > itemsPerPage && (
+        <div className="pagination-controls">
+          <button onClick={handlePreviousPage} disabled={currentPage === 1}>
+            Previous
+          </button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };
