@@ -296,6 +296,14 @@ body{
 .description {
   padding-left: 14px;
 }
+.pagination-controls {
+  text-align: end;
+  padding-top: 12px;
+  padding-right: 14px;
+}
+.pagination-controls span {
+  padding: 0px 15px;
+}
 .fs-18{
     font-size: 18px;
     font-weight: 500;
@@ -352,7 +360,10 @@ body{
     border-radius: 4px;
     position: absolute;
     z-index: 1;
-    min-width:128px;
+    min-width: 160px;
+    min-height: 64px;
+    max-height: 210px;
+    overflow-y: auto;
 }
 .profile-name {
   font-size: 20px;
@@ -364,10 +375,13 @@ body{
 .ui.form {
   margin-top: 29px;
 }
+
+
 .range-slider {
   position: relative;
   width: 98%;
   margin: 10px 0px 0px 18px;
+  pointer-events: none;
 }
 
 .slider {
@@ -436,9 +450,7 @@ body{
   padding: 8px;
   text-align: left;
 }
-  /* .total-table td {
-    background-color: #fff;
-  } */
+
 .total-table th {
   background-color: #f2f2f2;
   font-weight: bold;
@@ -474,25 +486,25 @@ body{
   padding: 0px 14px;
 }
 .pagination button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+  background-color: #0056b3; 
 }
 
 .pagination button:disabled {
-  background-color: #c0c0c0; /* Grey out disabled button */
+  background-color: #c0c0c0;
   cursor: not-allowed;
 }
 
 .pagination button:disabled:hover {
-  background-color: #c0c0c0; /* Keep grey when disabled */
+  background-color: #c0c0c0; 
 }
 
 .pagination button:first-child, .pagination button:last-child {
-  font-weight: bold; /* Make arrows bold */
-  font-size: 18px; /* Increase size for arrows */
+  font-weight: bold; 
+  font-size: 18px; 
 }
 
 
-.table-header-cell {
+/* .table-header-cell {
   background-color: #fff;
 }
 .reports-table {
@@ -543,12 +555,82 @@ body{
   text-align: center;
   border: 1px solid #ccc;
 }
-/* .table-header-cell.agents-row .table-cell{
-  min-width: 20%;
-} */
+
 .sticky-col {
   position: sticky;
   left: 0;
   background-color: #fff;
   z-index: 1;
+} */
+
+
+
+/* Container for horizontal scrolling */
+.table-container {
+  width: 100%;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  max-width: 100%; /* Prevent overflow beyond the parent container */
+  position: relative;
+}
+
+/* Table layout */
+.table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* Ensures consistent column widths */
+}
+
+/* Header and rows */
+.table-header-row, .table-row {
+  display: table-row;
+}
+
+.table-header-cell, .table-cell {
+  display: table-cell;
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  text-align: left;
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: hidden; /* Hide overflow content */
+  text-overflow: ellipsis; /* Add ellipsis for overflowing content */
+}
+
+/* Sticky first column */
+.sticky-col {
+  position: sticky;
+  left: 0;
+  background-color: #f9f9f9; /* Background for sticky column */
+  z-index: 2; /* Ensure it's above other content */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Shadow for clarity */
+}
+
+/* Header sticky column z-index */
+.table-header-row .sticky-col {
+  z-index: 3;
+}
+
+/* Define widths for columns */
+.table-header-cell, .table-cell {
+  width: 120px; /* Adjust based on your needs */
+}
+
+/* Sticky column width */
+.sticky-col {
+  width: 200px; /* Adjust for the first column */
+}
+
+/* Horizontal scrolling behavior */
+.table-container {
+  scroll-snap-type: x mandatory; /* Smooth horizontal snapping */
+}
+.reports-table {
+  padding-left: 20px;
+}
+.response-table,
+.agent-table  {
+  border-collapse: separate;
+}
+.table-header h2 {
+  text-align: left;
 }
