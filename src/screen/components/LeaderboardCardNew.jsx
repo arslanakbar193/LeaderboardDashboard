@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import LeaderbordCard from "../components/LeaderboradCard";
 import SecondLeaderboardCard from "../components/SecondLeaderboradCard";
 import ThirdLeaderboardCard from "../components/ThirdLeaderboradCard";
-import Avatar from "../../images/avatar.png";
 import dollar from "../../images/dollar.png";
 import dollarcoin from "../../images/dollar-coin.png";
 import iconlabel from "../../images/label.png";
@@ -28,17 +27,12 @@ import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 
 const LeaderBoardDashboard = () => {
   const ApiUrl = 'http://localhost:54103';
-  const [selectedLeader, setSelectedLeader] = useState(leaderOptions[0]);
+  const [selectedLeader, setSelectedLeader] = useState(leaderOptions[0].subOptions[0]);
   const [expandedLeader, setExpandedLeader] = useState(null);
-  // const [selectedMember, setSelectedMember] = useState(everyoneOptions[0]);
-  // const [selectedOption, setSelectedOption] = useState(null);
-  // const [selectedMonth, setSelectedMonth] = useState(null);
-  // const [selectedMonth, setSelectedMonth] = useState(everymonthOptions[0]);
-  // const [selectedMonths, setSelectedMonths] = useState([]);
-  const [selectedMonths, setSelectedMonths] = useState([]); // Multi-select for months
+  const [selectedMonths, setSelectedMonths] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedYear, setSelectedYear] = useState(everyyearOptions[0]);
-  const [sampleData, setSampleData] = useState([]);
+  const [sampleData, setSampleData] = useState(initialSampleData);
   const [token, setToken] = useState('');
 
 
@@ -59,7 +53,7 @@ const LeaderBoardDashboard = () => {
       console.log("Token received");
       console.log(token);
       // console.log(ApiUrl);
-      getUserData();
+      // getUserData();
       getUserData1();
 
     }
@@ -80,89 +74,6 @@ const LeaderBoardDashboard = () => {
       // console.log(response);
       if (response && response.ok) {
         const data = await response.json();
-        // console.log(data);
-
-        // setInitialSampleData(data.sort((a, b) => b.totalDeals - a.totalDeals).slice(0, 3) // Sorting by totalDeals in descending order
-        // .map((user, index) => ({
-        //   name: user.name,
-        //   profile: Avatar, // Assign the Avatar here
-        //   rank: (index + 1).toString(),
-        //   totalDeals: user.totalDeals,
-        //   totalCalls: user.totalCalls,
-        //   totalViewings: user.totalViewings,
-        //   totalListings: user.totalListings,
-        //   totalEarning: user.totalDeals, // Set totalEarning as totalDeals for this set
-        //   status: 'Total Deals',
-        //   icon: dollar, // Assign the dollar icon here
-        //   icondollar: dollarcoin,
-        //   iconlabel: iconlabel,
-        //   commission: user.commission,
-        //   dealAverage: user.dealAverage,
-        //   closed: user.closed,
-        //   dealPercentage: user.dealPercentage,
-        // })));
-
-        // setInitialSampleData1(data.map((item, index) => ({
-        //   name: item.name,
-        //   profile: Avatar,
-        //   rank: (index + 1).toString(),
-        //   totalDeals: parseInt(item.totalDeals),
-        //   totalCalls: parseInt(item.totalCalls),  
-        //   totalViewings: parseInt(item.totalViewings),
-        //   totalListings: parseInt(item.totalListings),
-        //   totalEarning: item.totalCalls,  
-        //   status: "Total Calls",
-        //   icon: dollar,
-        //   icondollar: dollarcoin,
-        //   iconlabel: iconlabel,
-        //   commission: item.commission,
-        //   dealAverage: item.dealAverage,
-        //   closed: item.closed,
-        //   dealPercentage: item.dealPercentage
-        // })).sort((a, b) => b.totalCalls - a.totalCalls).slice(0, 3));
-
-        // setInitialSampleData2(data.map((item, index) => ({
-        //   name: item.name,
-        //   profile: Avatar,
-        //   rank: (index + 1).toString(),
-        //   totalDeals: parseInt(item.totalDeals),
-        //   totalCalls: parseInt(item.totalCalls),  
-        //   totalViewings: parseInt(item.totalViewings),
-        //   totalListings: parseInt(item.totalListings),
-        //   totalEarning: item.totalViewings,  
-        //   status: "Total Viewings",
-        //   icon: dollar,
-        //   icondollar: dollarcoin,
-        //   iconlabel: iconlabel,
-        //   commission: item.commission,
-        //   dealAverage: item.dealAverage,
-        //   closed: item.closed,
-        //   dealPercentage: item.dealPercentage
-        // })).sort((a, b) => b.totalViewings - a.totalViewings).slice(0, 3));
-
-        // setInitialSampleData3(data.map((item, index) => ({
-        //   name: item.name,
-        //   profile: Avatar,
-        //   rank: (index + 1).toString(),
-        //   totalDeals: parseInt(item.totalDeals),
-        //   totalCalls: parseInt(item.totalCalls),  
-        //   totalViewings: parseInt(item.totalViewings),
-        //   totalListings: parseInt(item.totalListings),
-        //   totalEarning: item.totalListings,  
-        //   status: "Total Listing",
-        //   icon: dollar,
-        //   icondollar: dollarcoin,
-        //   iconlabel: iconlabel,
-        //   commission: item.commission,
-        //   dealAverage: item.dealAverage,
-        //   closed: item.closed,
-        //   dealPercentage: item.dealPercentage
-        // })).sort((a, b) => b.totalListings - a.totalListings).slice(0, 3));
-
-        // console.log(initialSampleData);
-        // console.log(initialSampleData1);
-        // console.log(initialSampleData2);
-        // console.log(initialSampleData3);
 
       } else {
         console.error("Failed to fetch data:", response.status, response.statusText);
@@ -186,8 +97,48 @@ const LeaderBoardDashboard = () => {
         }
       );
       if (response && response.ok) {
-        const data = await response.json();
-        console.log(data, "Leaderbord data");
+        const responseData = await response.json();
+        console.log(responseData, "Leaderbord data");
+
+        const transformedData = responseData.data.map(item => {
+          const kpi = item.KPI ? JSON.parse(item.KPI) : {}; // Parse KPI or fallback to an empty object
+
+          const saleDeals = parseFloat(kpi.saleDeals ?? 0);
+          const rentDeals = parseFloat(kpi.rentDeals ?? 0);
+          const calls = parseFloat(kpi.calls ?? 0);
+          const viewing = parseFloat(kpi.viewing ?? 0);
+          const saleListings = parseFloat(kpi.saleListings ?? 0);
+          const rentListings = parseFloat(kpi.rentListings ?? 0);
+
+          return {
+            name: item.agent_name,
+            saleListingValue: item.sale_listings_value,
+            rentListingValue: item.rent_listings_value,
+            salecommission: item.sale_listings_commission,
+            rentcommission: item.rent_listings_commission,
+            saleListingsclosed: item.sale_listings_sold,
+            rentListingsclosed: item.rent_listings_sold,
+            phoneCalls: item.phone_calls,
+            noOfViewings: item.no_of_viewings,
+            saleListings: item.sale_new_listings,
+            rentListings: item.rent_new_listings,
+            saleDealsTarget: saleDeals,
+            rentDealsTarget: rentDeals,
+            callsTarget: calls,
+            viewingTarget: viewing,
+            saleListingsTarget: saleListings,
+            rentListingsTarget: rentListings,
+            saleDealsPct: saleDeals ? ((item.sale_listings_value / saleDeals) * 100).toFixed(2) + '%' : '0%',
+            rentDealsPct: rentDeals ? ((item.rent_listings_value / rentDeals) * 100).toFixed(2) + '%' : '0%',
+            callsPct: calls ? ((item.phone_calls / calls) * 100).toFixed(2) + '%' : '0%',
+            viewingPct: viewing ? ((item.no_of_viewings / viewing) * 100).toFixed(2) + '%' : '0%',
+            saleListingsPct: saleListings ? ((item.sale_new_listings / saleListings) * 100).toFixed(2) + '%' : '0%',
+            rentListingsPct: rentListings ? ((item.rent_new_listings / rentListings) * 100).toFixed(2) + '%' : '0%',
+          };
+        });
+
+        // Set the transformed data
+        setSampleData(transformedData);
 
       } else {
         console.error("Failed to fetch data:", response.status, response.statusText);
@@ -197,34 +148,9 @@ const LeaderBoardDashboard = () => {
     }
   };
 
-  useEffect(() => {
-    switch (selectedLeader.value) {
-      case "leaders":
-        setSampleData(initialSampleData);
-        break;
-      case "leaders2":
-        setSampleData(initialSampleData1);
-        break;
-      case "leaders3":
-        setSampleData(initialSampleData2);
-        break;
-      case "saleDeals":
-        setSampleData(initialSampleData);
-        break;
-      case "rentalDeals":
-        setSampleData(initialSampleData);
-        break;
-
-      case "salesListing":
-        setSampleData(initialSampleData3); // Same as Listing Dashboard
-        break;
-      case "rentalListing":
-        setSampleData(initialSampleData3); // Same as Listing Dashboard
-        break;
-      default:
-        setSampleData([]);
-    }
-  }, [selectedLeader]);
+  // useEffect(() => {
+  //   setSampleData(initialSampleData);
+  // }, [selectedLeader]);
 
   const setEnvironment = () => {
     if (process.env.NODE_ENV === 'development') {
@@ -235,862 +161,676 @@ const LeaderBoardDashboard = () => {
     }
   };
 
-    const handleLeaderClick = (option) => {
-      if (option.subOptions) {
-        setExpandedLeader(option.value === expandedLeader ? null : option.value);
-      } else {
-        setSelectedLeader(option);
-        setExpandedLeader(null); // Close other sub-options
-      }
-    };
+  const handleLeaderClick = (option) => {
+    if (option.subOptions) {
+      setExpandedLeader(option.value === expandedLeader ? null : option.value);
+    } else {
+      setSelectedLeader(option);
+      setExpandedLeader(null); // Close other sub-options
+    }
+  };
 
-    const handleSelectionChange = (newSelection) => {
-      setSelectedLeader(newSelection);
-    };
-    const handleSelection = (option) => {
-      if (selected.some((sel) => sel.value === option.value)) {
-        // If the option is already selected, remove it
-        onSelectedChange(selected.filter((sel) => sel.value !== option.value));
-      } else {
-        // Otherwise, add it
-        onSelectedChange([...selected, option]);
-      }
-    };
+  const handleSelectionChange = (newSelection) => {
+    setSelectedLeader(newSelection);
+  };
+  const handleSelection = (option) => {
+    if (selected.some((sel) => sel.value === option.value)) {
+      // If the option is already selected, remove it
+      onSelectedChange(selected.filter((sel) => sel.value !== option.value));
+    } else {
+      // Otherwise, add it
+      onSelectedChange([...selected, option]);
+    }
+  };
 
-    return (
-      <>
-        <div className="container-fluid">
-          <div className="dashboard-wrapper row">
-            <div className="leaderboard-sidebar col-2">
-              <div>
-                <img
-                  src="https://demo.goyzer.com/uploadedfiles/Group/2677/logo__original.png?v=1.1"
-                  style={{ width: "150px", marginBottom: "20px" }}
-                />{" "}
-              </div>
-              <ul className="leader-options">
-                {leaderOptions.map((option, index) => {
-                  const isParentActive =
-                    option.value === selectedLeader.value ||
-                    (option.subOptions &&
-                      option.subOptions.some(
-                        (subOption) => subOption.value === selectedLeader.value
-                      ));
-                  const isExpanded = expandedLeader === option.value;
+  return (
+    <>
+      <div className="container-fluid">
+        <div className="dashboard-wrapper row">
+          <div className="leaderboard-sidebar col-2">
+            <div>
+              <img
+                src="https://demo.goyzer.com/uploadedfiles/Group/2677/logo__original.png?v=1.1"
+                style={{ width: "150px", marginBottom: "20px" }}
+              />{" "}
+            </div>
+            <ul className="leader-options">
+              {leaderOptions.map((option, index) => {
+                const isParentActive =
+                  option.value === selectedLeader.value ||
+                  (option.subOptions &&
+                    option.subOptions.some(
+                      (subOption) => subOption.value === selectedLeader.value
+                    ));
+                const isExpanded = expandedLeader === option.value;
 
-                  return (
-                    <li
-                      key={index}
-                      style={{ cursor: "pointer", marginBottom: "10px" }}
-                      className={isParentActive ? "active" : ""}
+                return (
+                  <li
+                    key={index}
+                    style={{ cursor: "pointer", marginBottom: "10px" }}
+                    className={isParentActive ? "active" : ""}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
                     >
                       <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                        }}
+                        onClick={() => handleLeaderClick(option)}
+                        className={
+                          option.value === selectedLeader.value ? "active" : ""
+                        }
+                        style={{ display: "flex", alignItems: "center" }}
                       >
-                        <div
-                          onClick={() => handleLeaderClick(option)}
-                          className={
-                            option.value === selectedLeader.value ? "active" : ""
-                          }
-                          style={{ display: "flex", alignItems: "center" }}
+                        <span
+                          style={{
+                            fontSize: "20px",
+                            color: "#1f7bc1",
+                            marginRight: "8px",
+                            position: "relative",
+                            top: "3px",
+                          }}
                         >
-                          <span
-                            style={{
-                              fontSize: "20px",
-                              color: "#1f7bc1",
-                              marginRight: "8px",
-                              position: "relative",
-                              top: "3px",
-                            }}
-                          >
-                            {option.icon}
-                          </span>
-                          {option.label}
-                        </div>
-                        {option.subOptions && (
-                          <span
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent triggering the parent click
-                              setExpandedLeader(isExpanded ? null : option.value);
-                            }}
+                          {option.icon}
+                        </span>
+                        {option.label}
+                      </div>
+                      {option.subOptions && (
+                        <span
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering the parent click
+                            setExpandedLeader(isExpanded ? null : option.value);
+                          }}
+                          style={{
+                            cursor: "pointer",
+                            marginLeft: "10px",
+                            position: "relative",
+                            top: "4px",
+                          }}
+                        >
+                          {isExpanded ? (
+                            <FiChevronUp size={20} color="#1f7bc1" />
+                          ) : (
+                            <FiChevronDown size={20} color="#1f7bc1" />
+                          )}
+                        </span>
+                      )}
+                    </div>
+                    {option.subOptions && isExpanded && (
+                      <ul style={{ paddingLeft: "58px" }} className="sub-child">
+                        {option.subOptions.map((subOption, subIndex) => (
+                          <li
+                            key={subIndex}
+                            onClick={() => setSelectedLeader(subOption)}
+                            className={
+                              subOption.value === selectedLeader.value
+                                ? "active"
+                                : ""
+                            }
                             style={{
                               cursor: "pointer",
-                              marginLeft: "10px",
-                              position: "relative",
-                              top: "4px",
+                              marginTop: "5px",
+                              padding: "5px",
                             }}
                           >
-                            {isExpanded ? (
-                              <FiChevronUp size={20} color="#1f7bc1" />
-                            ) : (
-                              <FiChevronDown size={20} color="#1f7bc1" />
-                            )}
-                          </span>
-                        )}
-                      </div>
-                      {option.subOptions && isExpanded && (
-                        <ul style={{ paddingLeft: "58px" }} className="sub-child">
-                          {option.subOptions.map((subOption, subIndex) => (
-                            <li
-                              key={subIndex}
-                              onClick={() => setSelectedLeader(subOption)}
-                              className={
-                                subOption.value === selectedLeader.value
-                                  ? "active"
-                                  : ""
-                              }
-                              style={{
-                                cursor: "pointer",
-                                marginTop: "5px",
-                                padding: "5px",
-                              }}
-                            >
-                              {subOption.label}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-            <div className="right-sideContent col-9">
-              <div className="topbar">
-                <div className="top-right-select">
-                  <FullscreenToggle />
-                  <Dropdown
-                    label="Select Month"
-                    options={everymonthOptions}
-                    selected={selectedMonths}
-                    onSelectedChange={setSelectedMonths}
-                    multiSelect={true} // Pass multiSelect prop
-                  />
-                  <Dropdown
-                    label=""
-                    options={everyyearOptions}
-                    selected={selectedYear}
-                    onSelectedChange={setSelectedYear}
-                  />
-                  {/* <p>
+                            {subOption.label}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          <div className="right-sideContent col-9">
+            <div className="topbar">
+              <div className="top-right-select">
+                <FullscreenToggle />
+                <Dropdown
+                  label="Select Month"
+                  options={everymonthOptions}
+                  selected={selectedMonths}
+                  onSelectedChange={setSelectedMonths}
+                  multiSelect={true} // Pass multiSelect prop
+                />
+                <Dropdown
+                  label=""
+                  options={everyyearOptions}
+                  selected={selectedYear}
+                  onSelectedChange={setSelectedYear}
+                />
+                {/* <p>
         Selected Months:{" "}
         {selectedMonths.length > 0
           ? selectedMonths.map((month) => month.label).join(", ")
           : "None"}
       </p> */}
 
-                  {/* <h3>Everyone Options</h3> */}
-                  <Dropdown
-                    label="Select Option"
-                    options={everyoneOptions}
-                    selected={selectedOption}
-                    onSelectedChange={setSelectedOption}
-                  />
-                  {/* <p>Selected Option: {selectedOption?.label || "None"}</p> */}
+                {/* <h3>Everyone Options</h3> */}
+                <Dropdown
+                  label="Select Option"
+                  options={everyoneOptions}
+                  selected={selectedOption}
+                  onSelectedChange={setSelectedOption}
+                />
+                {/* <p>Selected Option: {selectedOption?.label || "None"}</p> */}
 
-                </div>
               </div>
-
-              {selectedLeader.value === "leaders8" ? (
-                <AgentResponseTable />
-              ) : selectedLeader.value === "leaders7" ? (
-                <AgentReportsTable />
-              ) : selectedLeader.value === "leaders6" ? (
-                <ReportsTable />
-              ) : selectedLeader.value === "leaders5" ? (
-                <TotalDashboard data={sampleData} />
-              ) : (
-                <>
-                  <LeaderbordCard data={sampleData} selectedLeader={selectedLeader} />
-
-                  {selectedLeader.value === "leaders2" ? (
-                    <SecondLeaderboardCard
-                      data={secondsampleData1}
-                      title="Calls Data"
-                    />
-                  ) : selectedLeader.value === "leaders3" ? (
-                    <SecondLeaderboardCard
-                      data={secondsampleData2}
-                      title="Viewing Data"
-                    />
-                  ) : selectedLeader.value === "salesListing" || selectedLeader.value === "rentalListing" ? (
-                    <SecondLeaderboardCard
-                      data={secondsampleData3}
-                      title="Listing Data"
-                    />
-                  ) : selectedLeader.value === "leaders4" ? (
-                    <SecondLeaderboardCard
-                      data={secondsampleData3}
-                      title="New Data for Leader 4"
-                    />
-                  ) : (
-                    <SecondLeaderboardCard
-                      data={secondsampleData}
-                      title="Default Data"
-                    />
-                  )}
-
-                  {selectedLeader.value === "leaders2" ? (
-                    <ThirdLeaderboardCard data={thirdsampleData1} type="calls" />
-                  ) : selectedLeader.value === "leaders3" ? (
-                    <ThirdLeaderboardCard
-                      data={thirdsampleData2}
-                      type="viewings"
-                    />
-                  ) : selectedLeader.value === "salesListing" || selectedLeader.value === "rentalListing" ? (
-                    <ThirdLeaderboardCard
-                      data={thirdsampleData3}
-                      type="listings"
-                    />
-                  ) : selectedLeader.value === "leaders4" ? (
-                    <ThirdLeaderboardCard
-                      data={thirdsampleData3}
-                      type="listings"
-                    />
-                  ) : (
-                    <ThirdLeaderboardCard data={thirdsampleData} type="default" />
-                  )}
-                </>
-              )}
             </div>
+
+            {selectedLeader.value === "leaders8" ? (
+              <AgentResponseTable />
+            ) : selectedLeader.value === "leaders7" ? (
+              <AgentReportsTable />
+            ) : selectedLeader.value === "leaders6" ? (
+              <ReportsTable />
+            ) : selectedLeader.value === "leaders5" ? (
+              <TotalDashboard data={sampleData} />
+            ) : (
+              <>
+                <LeaderbordCard data={sampleData} selectedLeader={selectedLeader} />
+
+                {selectedLeader.value === "leaders2" ? (
+                  <SecondLeaderboardCard
+                    data={secondsampleData1}
+                    title="Calls Data"
+                  />
+                ) : selectedLeader.value === "leaders3" ? (
+                  <SecondLeaderboardCard
+                    data={secondsampleData2}
+                    title="Viewing Data"
+                  />
+                ) : selectedLeader.value === "salesListing" || selectedLeader.value === "rentalListing" ? (
+                  <SecondLeaderboardCard
+                    data={secondsampleData3}
+                    title="Listing Data"
+                  />
+                ) : selectedLeader.value === "leaders4" ? (
+                  <SecondLeaderboardCard
+                    data={secondsampleData3}
+                    title="New Data for Leader 4"
+                  />
+                ) : (
+                  <SecondLeaderboardCard
+                    data={secondsampleData}
+                    title="Default Data"
+                  />
+                )}
+
+                {selectedLeader.value === "leaders2" ? (
+                  <ThirdLeaderboardCard data={thirdsampleData1} type="calls" />
+                ) : selectedLeader.value === "leaders3" ? (
+                  <ThirdLeaderboardCard
+                    data={thirdsampleData2}
+                    type="viewings"
+                  />
+                ) : selectedLeader.value === "salesListing" || selectedLeader.value === "rentalListing" ? (
+                  <ThirdLeaderboardCard
+                    data={thirdsampleData3}
+                    type="listings"
+                  />
+                ) : selectedLeader.value === "leaders4" ? (
+                  <ThirdLeaderboardCard
+                    data={thirdsampleData3}
+                    type="listings"
+                  />
+                ) : (
+                  <ThirdLeaderboardCard data={thirdsampleData} type="default" />
+                )}
+              </>
+            )}
           </div>
         </div>
-      </>
-    );
-  };
-  LeaderBoardDashboard.propTypes = {
-    selectedLeader: PropTypes.shape({
-      value: PropTypes.string.isRequired,
-    }).isRequired,
-    selectedMember: PropTypes.shape({
-      value: PropTypes.string.isRequired,
-    }).isRequired,
-    selectedMonth: PropTypes.shape({
-      value: PropTypes.string.isRequired,
-    }).isRequired,
-  };
-  export default LeaderBoardDashboard;
+      </div>
+    </>
+  );
+};
+LeaderBoardDashboard.propTypes = {
+  selectedLeader: PropTypes.shape({
+    value: PropTypes.string.isRequired,
+  }).isRequired,
+  selectedMember: PropTypes.shape({
+    value: PropTypes.string.isRequired,
+  }).isRequired,
+  selectedMonth: PropTypes.shape({
+    value: PropTypes.string.isRequired,
+  }).isRequired,
+};
+export default LeaderBoardDashboard;
 
-  const initialSampleData = [
-    {
-      name: "Emily Williams",
-      profile: Avatar,
-      rank: "1",
-      totalDeals: 15,
-      totalCalls: 35,
-      totalViewings: 65,
-      totalListings: 12,
-      totalEarning: "3.4M",
-      status: "Total Deals",
-      icon: dollar,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "110%",
-    },
-    {
-      name: "Lily Adams",
-      profile: Avatar,
-      rank: "2",
-      totalDeals: 17,
-      totalCalls: 212,
-      totalViewings: 21,
-      totalListings: 238,
-      totalEarning: "2.7M",
-      status: "Total Deals",
-      icon: dollar,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "90%",
-    },
-    {
-      name: "Sarah Brown",
-      profile: Avatar,
-      rank: "2",
-      totalDeals: 67,
-      totalCalls: 20,
-      totalViewings: 83,
-      totalListings: 58,
-      totalEarning: "2.9M",
-      status: "Total Deals",
-      icon: dollar,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "80%",
-    },
-  ];
-  const initialSampleData1 = [
-    {
-      name: "Emily Williams",
-      profile: Avatar,
-      rank: "1",
-      totalDeals: 99,
-      totalCalls: 15,
-      totalViewings: 85,
-      totalListings: 712,
-      totalEarning: "49",
-      status: "Total Calls",
-      // icon: <IoCall /> ,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "90%",
-    },
-    {
-      name: "Lily Adams",
-      profile: Avatar,
-      rank: "2",
-      totalDeals: 57,
-      totalCalls: 512,
-      totalViewings: 53,
-      totalListings: 58,
-      totalEarning: "23",
-      status: "Total Calls",
-      // icon: <IoCall /> ,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "80%",
-    },
-    {
-      name: "Sarah Brown",
-      profile: Avatar,
-      rank: "2",
-      totalDeals: 47,
-      totalCalls: 312,
-      totalViewings: 33,
-      totalListings: 38,
-      totalEarning: "25",
-      status: "Total Calls",
-      // icon: <IoCall /> ,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "70%",
-    },
-  ];
-  const initialSampleData2 = [
-    {
-      name: "Emily Williams",
-      profile: Avatar,
-      rank: "1",
-      totalDeals: 29,
-      totalCalls: 215,
-      totalViewings: 25,
-      totalListings: 212,
-      totalEarning: "300",
-      status: "Total Viewings",
-      icon: dollar,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "60%",
-    },
-    {
-      name: "Sarah Brown",
-      profile: Avatar,
-      rank: "2",
-      totalDeals: 57,
-      totalCalls: 12,
-      totalViewings: 3,
-      totalListings: 48,
-      totalEarning: "90",
-      status: "Total Viewings",
-      icon: dollar,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "50%",
-    },
-    {
-      name: "Lily Adams",
-      profile: Avatar,
-      rank: "2",
-      totalDeals: 7,
-      totalCalls: 12,
-      totalViewings: 3,
-      totalListings: 8,
-      totalEarning: "2.0",
-      status: "Total Viewings",
-      icon: dollar,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "80%",
-    },
-  ];
-  const initialSampleData3 = [
-    {
-      name: "Lily Adams",
-      profile: Avatar,
-      rank: "1",
-      totalDeals: 9,
-      totalCalls: 15,
-      totalViewings: 5,
-      totalListings: 12,
-      totalEarning: "36",
-      status: "Total Listing",
-      icon: dollar,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "90%",
-    },
-    {
-      name: "Sarah Brwon",
-      profile: Avatar,
-      rank: "2",
-      totalDeals: 7,
-      totalCalls: 12,
-      totalViewings: 3,
-      totalListings: 8,
-      totalEarning: "27",
-      status: "Total Listing",
-      icon: dollar,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "60%",
-    },
-    {
-      name: "Emily Williams",
-      profile: Avatar,
-      rank: "2",
-      totalDeals: 7,
-      totalCalls: 12,
-      totalViewings: 3,
-      totalListings: 8,
-      totalEarning: "72",
-      status: "Total Listing",
-      icon: dollar,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "50%",
-    },
-  ];
-  const initialSampleData4 = [
-    {
-      name: "William4",
-      profile: Avatar,
-      rank: "1",
-      totalDeals: 9,
-      totalCalls: 15,
-      totalViewings: 5,
-      totalListings: 12,
-      totalEarning: "3.4M",
-      status: "Deals closed",
-      icon: dollar,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "110%",
-    },
-    {
-      name: "jessica",
-      profile: Avatar,
-      rank: "2",
-      totalDeals: 7,
-      totalCalls: 12,
-      totalViewings: 3,
-      totalListings: 8,
-      totalEarning: "2.7M",
-      status: "Deals closed",
-      icon: dollar,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "90%",
-    },
-  ];
 
-  const secondsampleData = [
-    {
-      icon: <CiDollar style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-      totalEarning: "2.7M",
-      status: "Total Deals",
-    },
-    {
-      icon: <BsCash style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-      totalEarning: "3.4M",
-      status: "Total Commision",
-    },
+const initialSampleData = [
+  {
+    name: "Emily Williamsa",
+    saleListingValue: "340000",
+    rentListingValue: "3500202",
+    salecommission: "9220202",
+    rentcommission: "93242342",
+    saleListingsclosed: 9,
+    rentListingsclosed: 10,
+    phoneCalls: "49",
+    noOfViewings: "300",
+    saleListings: "33",
+    rentListings: "41",
+    saleDealsTarget: "500034433",
+    rentDealsTarget: "64343434",
+    callsTarget: "150",
+    viewingTarget: "50",
+    saleListingsTarget: "20",
+    rentListingsTarget: "90",
+    saleDealsPct: "493.9%",
+    rentDealsPct: "89%",
+    callsPct: "20%",
+    viewingPct: "120%",
+    saleListingsPct: "60%",
+    rentListingsPct: "10%",
+  },
+  {
+    name: "Lily Adams",
+    saleListingValue: "340000",
+    rentListingValue: "3500202",
+    salecommission: "9220202",
+    rentcommission: "93242342",
+    saleListingsclosed: 9,
+    rentListingsclosed: 10,
+    phoneCalls: "49",
+    noOfViewings: "300",
+    saleListings: "33",
+    rentListings: "41",
+    saleDealsTarget: "500034433",
+    rentDealsTarget: "64343434",
+    callsTarget: "150",
+    viewingTarget: "50",
+    saleListingsTarget: "20",
+    rentListingsTarget: "90",
+    saleDealsPct: "4943.9%",
+    rentDealsPct: "849%",
+    callsPct: "240%",
+    viewingPct: "1420%",
+    saleListingsPct: "460%",
+    rentListingsPct: "140%",
+  },
+  {
+    name: "Sarah Brown",
+    saleListingValue: "340000",
+    rentListingValue: "3500202",
+    salecommission: "9220202",
+    rentcommission: "93242342",
+    saleListingsclosed: 9,
+    rentListingsclosed: 10,
+    phoneCalls: "49",
+    noOfViewings: "300",
+    saleListings: "33",
+    rentListings: "41",
+    saleDealsTarget: "500034433",
+    rentDealsTarget: "64343434",
+    callsTarget: "150",
+    viewingTarget: "50",
+    saleListingsTarget: "20",
+    rentListingsTarget: "90",
+    saleDealsPct: "4932.9%",
+    rentDealsPct: "892%",
+    callsPct: "202%",
+    viewingPct: "1220%",
+    saleListingsPct: "620%",
+    rentListingsPct: "120%",
+  },
+];
+const secondsampleData = [
+  {
+    icon: <CiDollar style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
+    totalEarning: "2.7M",
+    status: "Total Deals",
+  },
+  {
+    icon: <BsCash style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
+    totalEarning: "3.4M",
+    status: "Total Commision",
+  },
+  {
+    icon: (
+      <MdLabelOutline
+        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
+      />
+    ),
+    totalEarning: "2.4M",
+    status: "Total Close",
+  },
+  {
+    icon: (
+      <LiaPercentageSolid
+        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
+      />
+    ),
+    totalEarning: "90%",
+    status: "Total Percentage",
+  },
+];
+const secondsampleData1 = [
+  {
+    icon: (
+      <MdOutlineCall style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />
+    ),
+    totalEarning: "100",
+    status: "Total Calls",
+  },
+  {
+    icon: (
+      <LiaPercentageSolid
+        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
+      />
+    ),
+    totalEarning: "60%",
+    status: "Total Percentage",
+  },
+];
+const secondsampleData2 = [
+  {
+    icon: (
+      <CiViewBoard style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />
+    ),
+    totalEarning: "100",
+    status: "Total Viewing",
+  },
+  {
+    icon: (
+      <LiaPercentageSolid
+        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
+      />
+    ),
+    totalEarning: "80%",
+    status: "Total Percentage",
+  },
+];
 
-    {
-      icon: (
-        <MdLabelOutline
-          style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-        />
-      ),
-      totalEarning: "2.4M",
-      status: "Total Close",
-    },
-    {
-      icon: (
-        <LiaPercentageSolid
-          style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-        />
-      ),
-      totalEarning: "90%",
-      status: "Total Percentage",
-    },
-  ];
-  const secondsampleData1 = [
-    {
-      icon: (
-        <MdOutlineCall style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />
-      ),
-      totalEarning: "100",
-      status: "Total Calls",
-    },
-    {
-      icon: (
-        <LiaPercentageSolid
-          style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-        />
-      ),
-      totalEarning: "60%",
-      status: "Total Percentage",
-    },
-  ];
-  const secondsampleData2 = [
-    {
-      icon: (
-        <CiViewBoard style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />
-      ),
-      totalEarning: "100",
-      status: "Total Viewing",
-    },
-    {
-      icon: (
-        <LiaPercentageSolid
-          style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-        />
-      ),
-      totalEarning: "80%",
-      status: "Total Percentage",
-    },
-  ];
+const secondsampleData3 = [
+  {
+    icon: <BiListUl style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
+    totalEarning: "100",
+    status: "Total Listing",
+  },
+  {
+    icon: (
+      <LiaPercentageSolid
+        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
+      />
+    ),
+    totalEarning: "90%",
+    status: "Total Percentage",
+  },
+];
 
-  const secondsampleData3 = [
-    {
-      icon: <BiListUl style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-      totalEarning: "100",
-      status: "Total Listing",
-    },
-    {
-      icon: (
-        <LiaPercentageSolid
-          style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-        />
-      ),
-      totalEarning: "90%",
-      status: "Total Percentage",
-    },
-  ];
+const thirdsampleData = [
+  {
+    name: "Lara Boyd",
 
-  const thirdsampleData = [
-    {
-      name: "Lara Boyd",
-      profile: Avatar,
-      rank: "4",
-      icon: <CiDollar style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "70%",
-    },
-    {
-      name: "Devin Cook",
-      profile: Avatar,
-      rank: "5",
-      icon: <BsCash style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "60%",
-    },
-    {
-      name: "Jennifer McKay",
-      profile: Avatar,
-      rank: "6",
-      commission: "92.2k",
-      icon: (
-        <MdLabelOutline
-          style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-        />
-      ),
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "180%",
-    },
-    {
-      name: "Lara Boyd",
-      profile: Avatar,
-      rank: "4",
-      icon: <CiDollar style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "70%",
-    },
-    {
-      name: "Devin",
-      profile: Avatar,
-      rank: "5",
-      icon: <BsCash style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      commission: "92.2k",
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "60%",
-    },
-    {
-      name: "Jennifer ",
-      profile: Avatar,
-      rank: "6",
-      commission: "92.2k",
-      icon: (
-        <MdLabelOutline
-          style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-        />
-      ),
-      icondollar: dollarcoin,
-      iconlabel: iconlabel,
-      dealAverage: "381.5k",
-      closed: 9,
-      dealPercentage: "180%",
-    },
-  ];
+    rank: "4",
+    icon: <CiDollar style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
+    icondollar: dollarcoin,
+    iconlabel: iconlabel,
+    commission: "92.2k",
+    dealAverage: "381.5k",
+    closed: 9,
+    dealPercentage: "70%",
+  },
+  {
+    name: "Devin Cook",
 
-  const thirdsampleData1 = [
-    {
-      name: "Lara Boyd",
-      profile: Avatar,
-      rank: "4",
-      icon: (
-        <MdOutlineCall style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />
-      ),
-      calls: "49",
-      dealPercentage: "90%",
-      iconp: (
-        <LiaPercentageSolid
-          style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-        />
-      ),
-    },
-    {
-      name: "Devin Cook",
-      profile: Avatar,
-      rank: "5",
-      icon: (
-        <MdOutlineCall style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />
-      ),
-      calls: "23",
-      dealPercentage: "80%",
-      iconp: (
-        <LiaPercentageSolid
-          style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-        />
-      ),
-    },
-    {
-      name: "Jennifer McKay",
-      profile: Avatar,
-      rank: "6",
-      commission: "92.2k",
-      icon: (
-        <MdOutlineCall style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />
-      ),
-      calls: "25",
-      dealPercentage: "70%",
-      iconp: (
-        <LiaPercentageSolid
-          style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-        />
-      ),
-    },
-  ];
-  const thirdsampleData2 = [
-    {
-      name: "Lara Boyd",
-      profile: Avatar,
-      rank: "4",
-      viewing: "400",
-      dealPercentage: "70%",
-    },
-    {
-      name: "Devin Cook",
-      profile: Avatar,
-      rank: "5",
-      viewing: "400",
-      dealPercentage: "50%",
-    },
-    {
-      name: "Jennifer McKay",
-      profile: Avatar,
-      rank: "6",
-      viewing: "400",
-      dealPercentage: "90%",
-    },
-  ];
-  const thirdsampleData3 = [
-    {
-      name: "Lara Boyd",
-      profile: Avatar,
-      rank: "4",
-      listing: "36",
-      dealPercentage: "90%",
-    },
-    {
-      name: "Devin Cook",
-      profile: Avatar,
-      rank: "5",
-      listing: "27",
-      dealPercentage: "60%",
-    },
-    {
-      name: "Jennifer McKay",
-      profile: Avatar,
-      rank: "6",
-      listing: "72",
-      dealPercentage: "50%",
-    },
-  ];
+    rank: "5",
+    icon: <BsCash style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
+    icondollar: dollarcoin,
+    iconlabel: iconlabel,
+    commission: "92.2k",
+    dealAverage: "381.5k",
+    closed: 9,
+    dealPercentage: "60%",
+  },
+  {
+    name: "Jennifer McKay",
 
-  const leaderOptions = [
-    {
-      label: "Deals Dashboard",
-      value: "leaders",
-      icon: <MdSpaceDashboard />,
-      subOptions: [
-        { label: "Sale Deals", value: "saleDeals" },
-        { label: "Rental Deals", value: "rentalDeals" },
-      ],
-    },
-    {
-      label: "Calls Dashboard",
-      value: "leaders2",
-      icon: <MdOutlineCall />,
-    },
-    {
-      label: "Viewings Dashboard",
-      value: "leaders3",
-      icon: <CiViewBoard />,
-    },
-    {
-      label: "Listing Dashboard",
-      value: "leaders4",
-      icon: <BiListUl />,
-      subOptions: [
-        { label: "Sales Listing", value: "salesListing" },
-        { label: "Rental Listing", value: "rentalListing" },
-      ],
-    },
-    {
-      label: "Lead Source Report",
-      value: "leaders6",
-      icon: <HiDocumentReport />,
-    },
-    {
-      label: "Agent Lead Report",
-      value: "leaders7",
-      icon: <HiOutlineDocumentReport />,
-    },
-    {
-      label: "Agent Response Time",
-      value: "leaders8",
-      icon: <HiOutlineDocumentReport />,
-    },
-  ];
+    rank: "6",
+    commission: "92.2k",
+    icon: (
+      <MdLabelOutline
+        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
+      />
+    ),
+    icondollar: dollarcoin,
+    iconlabel: iconlabel,
+    dealAverage: "381.5k",
+    closed: 9,
+    dealPercentage: "180%",
+  },
+  {
+    name: "Lara Boyd",
 
-  // const everyoneOptions = [
-  //   { label: "All", value: "1" },
-  //   { label: "Branches", value: "2" },
-  //   { label: "Teams", value: "3" },
-  // ];
+    rank: "4",
+    icon: <CiDollar style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
+    icondollar: dollarcoin,
+    iconlabel: iconlabel,
+    commission: "92.2k",
+    dealAverage: "381.5k",
+    closed: 9,
+    dealPercentage: "70%",
+  },
+  {
+    name: "Devin",
 
-  const everyoneOptions = [
-    { label: "All", value: "1" },
-    {
-      label: "Branches",
-      value: "2",
-      subOptions: [
-        { label: "Branch 1", value: "2-1" },
-        { label: "Branch 2", value: "2-2" },
-        { label: "Branch 3", value: "2-3" },
-      ],
-    },
-    {
-      label: "Teams",
-      value: "3",
-      subOptions: [
-        { label: "Team A", value: "3-1" },
-        { label: "Team B", value: "3-2" },
-        { label: "Team C", value: "3-3" },
-      ],
-    },
-  ];
-  const everymonthOptions = [
-    // { label: "This month", value: "1" },
-    { label: "December", value: "2" },
-    { label: "January", value: "3" },
-    { label: "Feburary", value: "4" },
-    { label: "March", value: "5" },
-    { label: "April", value: "6" },
-    { label: "May", value: "7" },
-    { label: "June", value: "8" },
-    { label: "July", value: "9" },
-    { label: "August", value: "10" },
-    { label: "September", value: "11" },
-    { label: "October", value: "12" },
-    { label: "November", value: "13" },
-  ];
-  const everyyearOptions = [
-    { label: "Year", value: "1" },
-    { label: "2024", value: "2" },
-    { label: "2023", value: "3" },
-  ];
+    rank: "5",
+    icon: <BsCash style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
+    icondollar: dollarcoin,
+    iconlabel: iconlabel,
+    commission: "92.2k",
+    dealAverage: "381.5k",
+    closed: 9,
+    dealPercentage: "60%",
+  },
+  {
+    name: "Jennifer ",
+
+    rank: "6",
+    commission: "92.2k",
+    icon: (
+      <MdLabelOutline
+        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
+      />
+    ),
+    icondollar: dollarcoin,
+    iconlabel: iconlabel,
+    dealAverage: "381.5k",
+    closed: 9,
+    dealPercentage: "180%",
+  },
+];
+
+const thirdsampleData1 = [
+  {
+    name: "Lara Boyd",
+
+    rank: "4",
+    icon: (
+      <MdOutlineCall style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />
+    ),
+    calls: "49",
+    dealPercentage: "90%",
+    iconp: (
+      <LiaPercentageSolid
+        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
+      />
+    ),
+  },
+  {
+    name: "Devin Cook",
+
+    rank: "5",
+    icon: (
+      <MdOutlineCall style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />
+    ),
+    calls: "23",
+    dealPercentage: "80%",
+    iconp: (
+      <LiaPercentageSolid
+        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
+      />
+    ),
+  },
+  {
+    name: "Jennifer McKay",
+
+    rank: "6",
+    commission: "92.2k",
+    icon: (
+      <MdOutlineCall style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />
+    ),
+    calls: "25",
+    dealPercentage: "70%",
+    iconp: (
+      <LiaPercentageSolid
+        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
+      />
+    ),
+  },
+];
+const thirdsampleData2 = [
+  {
+    name: "Lara Boyd",
+
+    rank: "4",
+    viewing: "400",
+    dealPercentage: "70%",
+  },
+  {
+    name: "Devin Cook",
+
+    rank: "5",
+    viewing: "400",
+    dealPercentage: "50%",
+  },
+  {
+    name: "Jennifer McKay",
+
+    rank: "6",
+    viewing: "400",
+    dealPercentage: "90%",
+  },
+];
+const thirdsampleData3 = [
+  {
+    name: "Lara Boyd",
+
+    rank: "4",
+    listing: "36",
+    dealPercentage: "90%",
+  },
+  {
+    name: "Devin Cook",
+
+    rank: "5",
+    listing: "27",
+    dealPercentage: "60%",
+  },
+  {
+    name: "Jennifer McKay",
+
+    rank: "6",
+    listing: "72",
+    dealPercentage: "50%",
+  },
+];
+
+const leaderOptions = [
+  {
+    label: "Deals Dashboard",
+    value: "leaders",
+    icon: <MdSpaceDashboard />,
+    subOptions: [
+      { label: "Sale Deals", value: "saleDeals" },
+      { label: "Rental Deals", value: "rentalDeals" },
+    ],
+  },
+  {
+    label: "Calls Dashboard",
+    value: "leaders2",
+    icon: <MdOutlineCall />,
+  },
+  {
+    label: "Viewings Dashboard",
+    value: "leaders3",
+    icon: <CiViewBoard />,
+  },
+  {
+    label: "Listing Dashboard",
+    value: "leaders4",
+    icon: <BiListUl />,
+    subOptions: [
+      { label: "Sales Listing", value: "salesListing" },
+      { label: "Rental Listing", value: "rentalListing" },
+    ],
+  },
+  {
+    label: "Lead Source Report",
+    value: "leaders6",
+    icon: <HiDocumentReport />,
+  },
+  {
+    label: "Agent Lead Report",
+    value: "leaders7",
+    icon: <HiOutlineDocumentReport />,
+  },
+  {
+    label: "Agent Response Time",
+    value: "leaders8",
+    icon: <HiOutlineDocumentReport />,
+  },
+];
+
+// const everyoneOptions = [
+//   { label: "All", value: "1" },
+//   { label: "Branches", value: "2" },
+//   { label: "Teams", value: "3" },
+// ];
+
+const everyoneOptions = [
+  { label: "All", value: "1" },
+  {
+    label: "Branches",
+    value: "2",
+    subOptions: [
+      { label: "Branch 1", value: "2-1" },
+      { label: "Branch 2", value: "2-2" },
+      { label: "Branch 3", value: "2-3" },
+    ],
+  },
+  {
+    label: "Teams",
+    value: "3",
+    subOptions: [
+      { label: "Team A", value: "3-1" },
+      { label: "Team B", value: "3-2" },
+      { label: "Team C", value: "3-3" },
+    ],
+  },
+];
+const everymonthOptions = [
+  // { label: "This month", value: "1" },
+  { label: "December", value: "2" },
+  { label: "January", value: "3" },
+  { label: "Feburary", value: "4" },
+  { label: "March", value: "5" },
+  { label: "April", value: "6" },
+  { label: "May", value: "7" },
+  { label: "June", value: "8" },
+  { label: "July", value: "9" },
+  { label: "August", value: "10" },
+  { label: "September", value: "11" },
+  { label: "October", value: "12" },
+  { label: "November", value: "13" },
+];
+const everyyearOptions = [
+  { label: "Year", value: "1" },
+  { label: "2024", value: "2" },
+  { label: "2023", value: "3" },
+];

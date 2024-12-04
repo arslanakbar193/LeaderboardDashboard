@@ -7,6 +7,7 @@ import { LiaPercentageSolid } from "react-icons/lia";
 import { MdOutlineCall } from "react-icons/md";
 import { CiViewBoard } from "react-icons/ci";
 import { BiListUl } from "react-icons/bi";
+import Avatar from "../../images/avatar.png";
 
 const ThirdLeaderboardCard = ({ data, type }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,7 +41,7 @@ const ThirdLeaderboardCard = ({ data, type }) => {
             <div className="cards" key={index}>
               <div className="card-left center-items">
                 <div>
-                  <img src={item.profile} alt="" />
+                  <img src={item.profile ? item.profile : Avatar} alt="" />
                 </div>
                 <div className="rank rank2">{item.rank}</div>
               </div>

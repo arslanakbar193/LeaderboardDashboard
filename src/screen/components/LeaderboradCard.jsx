@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CiDollar } from "react-icons/ci";
 import { BsCash } from "react-icons/bs";
 import { MdLabelOutline } from "react-icons/md";
@@ -6,53 +6,103 @@ import { LiaPercentageSolid } from "react-icons/lia";
 import { MdOutlineCall } from "react-icons/md";
 import { CiViewBoard } from "react-icons/ci";
 import { BiListUl } from "react-icons/bi";
-import { FiChevronDown, FiChevronUp } from "react-icons/fi"
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import Avatar from "../../images/avatar.png";
 const LeaderboradCard = ({ data, selectedLeader }) => {
+  const [filteredData, setFilteredData] = useState([]);
   const iconMap = {
+    saleDeals: <CiDollar />,
+    rentalDeals: <CiDollar />,
     leaders: <CiDollar style={{ fontSize: "50px" }} />,
     leaders2: <MdOutlineCall style={{ fontSize: "50px" }} />,
     leaders3: <CiViewBoard style={{ fontSize: "50px" }} />,
     leaders4: <BiListUl style={{ fontSize: "50px" }} />,
   };
+  const titleMap = {
+    saleDeals: "Total Deals",
+    rentalDeals: "Total Deals",
+    leaders2: "Total Calls",
+    leaders3: "Total Viewings",
+    salesListing: "Total Listing",
+    rentalListing: "Total Listing",
+  };
 
-  // Group leaders, saleDeals, and rentalDeals for Deals Dashboard logic
   const isDealsDashboard = ["leaders", "saleDeals", "rentalDeals"].includes(
     selectedLeader.value
   );
+
+  useEffect(() => {
+    switch (selectedLeader.value) {
+      case "saleDeals":
+        setFilteredData(data.sort((a, b) => b.saleListingValue - a.saleListingValue).slice(0, 3));
+        break;
+      case "rentalDeals":
+        setFilteredData(data.sort((a, b) => b.rentListingValue - a.rentListingValue).slice(0, 3));
+        break;
+      case "leaders2":
+        setFilteredData(data.sort((a, b) => b.phoneCalls - a.phoneCalls).slice(0, 3));
+        break;
+      case "leaders3":
+        setFilteredData(data.sort((a, b) => b.noOfViewings - a.noOfViewings).slice(0, 3));
+        break;
+      case "salesListing":
+        setFilteredData(data.sort((a, b) => b.saleListings - a.saleListings).slice(0, 3));
+        break;
+      case "rentalListing":
+        setFilteredData(data.sort((a, b) => b.rentListings - a.rentListings).slice(0, 3));
+        break;
+      default:
+        setFilteredData(data.slice(0, 3));
+    }
+  }, [selectedLeader.value]);
+  
+
+  function NumberConversion (labelValue) {
+    return Math.abs(Number(labelValue)) >= 1.0e+9
+    ? (Math.abs(Number(labelValue)) / 1.0e+9).toFixed(2) + "B"
+    : Math.abs(Number(labelValue)) >= 1.0e+6
+    ? (Math.abs(Number(labelValue)) / 1.0e+6).toFixed(2) + "M"
+    : Math.abs(Number(labelValue)) >= 1.0e+3
+    ? (Math.abs(Number(labelValue)) / 1.0e+3).toFixed(2) + "K"
+    : Math.abs(Number(labelValue));
+  }
+
   return (
     <>
       <div className="card-wrapper">
         <div className="card-items">
-          {data &&
-            data.length > 0 &&
-            data.map((item, index) => (
+          {filteredData &&
+            filteredData.length > 0 &&
+            filteredData.map((item, index) => (
               <div
                 className="cards"
                 key={index}
                 style={{ position: "relative" }}
               >
                 <div className="profile-image">
-                  <img src={item.profile} alt="" />
+                  <img src={item.profile ? item.profile : Avatar} alt="" />
                 </div>
-                <div className="rank">{item.rank}</div>
+                <div className="rank">{index + 1}</div>
                 <div className="profile-name">{item.name}</div>
 
                 <div className="earning">
-                  {iconMap[selectedLeader.value] || <CiDollar />}
-                  {item.totalEarning}
+                  {iconMap[selectedLeader.value]}
+                  {selectedLeader.value == "saleDeals" ? NumberConversion(item.saleListingValue) : (selectedLeader.value == "rentalDeals" ? NumberConversion(item.rentListingValue) :
+                    (selectedLeader.value == "leaders2" ? item.phoneCalls : (selectedLeader.value == "leaders3" ? item.noOfViewings :
+                      (selectedLeader.value == "salesListing" ? item.saleListings : item.rentListings)
+                    )))}
                 </div>
 
-                <div className="status">{item.status}</div>
+                <div className="status">{titleMap[selectedLeader.value]}</div>
 
                 {/* Apply 'center-items' class for 'Viewing' and 'Listing' dashboards */}
                 <div
-                  className={`flex deals-info ${
-                    ["leaders2", "leaders3", "leaders4" , "salesListing" , "rentalListing"].includes(
-                      selectedLeader.value
-                    )
-                      ? "center-items"
-                      : "justify-between"
-                  }`}
+                  className={`flex deals-info ${["leaders2", "leaders3", "leaders4", "salesListing", "rentalListing"].includes(
+                    selectedLeader.value
+                  )
+                    ? "center-items"
+                    : "justify-between"
+                    }`}
                 >
                   {isDealsDashboard && (
                     <>
@@ -60,13 +110,13 @@ const LeaderboradCard = ({ data, selectedLeader }) => {
                         <BsCash
                           style={{ fontSize: "25px", color: "#1f7bc1" }}
                         />
-                        <span>{item.commission}</span>
+                        <span>{selectedLeader.value == "saleDeals" ? NumberConversion(item.salecommission) : NumberConversion(item.rentcommission)}</span>
                       </div>
                       <div className="flex align-center label-image">
                         <MdLabelOutline
                           style={{ fontSize: "25px", color: "#1f7bc1" }}
                         />
-                        <span>{item.closed}</span>
+                        <span>{selectedLeader.value == "saleDeals" ? item.saleListingsclosed : item.rentListingsclosed}</span>
                       </div>
                     </>
                   )}
@@ -74,7 +124,10 @@ const LeaderboradCard = ({ data, selectedLeader }) => {
                     <LiaPercentageSolid
                       style={{ fontSize: "25px", color: "#1f7bc1" }}
                     />
-                    {item.dealPercentage}
+                    {selectedLeader.value == "saleDeals" ? item.saleDealsPct : (selectedLeader.value == "rentalDeals" ? item.rentDealsPct :
+                      (selectedLeader.value == "leaders2" ? item.callsPct : (selectedLeader.value == "leaders3" ? item.viewingPct :
+                        (selectedLeader.value == "salesListing" ? item.saleListingsPct : item.rentListingsPct)
+                      )))}
                   </div>
                 </div>
 
