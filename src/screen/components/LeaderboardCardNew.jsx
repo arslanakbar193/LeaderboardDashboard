@@ -339,27 +339,10 @@ const LeaderBoardDashboard = () => {
                     percentage="90%"
                     selectedLeader={selectedLeader}
                   />
-
-                {selectedLeader.value === "calls" ? (
-                  <ThirdLeaderboardCard data={thirdsampleData1} type="calls" />
-                ) : selectedLeader.value === "viewings" ? (
-                  <ThirdLeaderboardCard
-                    data={thirdsampleData2}
-                    type="viewings"
-                  />
-                ) : selectedLeader.value === "salesListing" || selectedLeader.value === "rentalListing" ? (
-                  <ThirdLeaderboardCard
-                    data={thirdsampleData3}
-                    type="listings"
-                  />
-                ) : selectedLeader.value === "leaders4" ? (
-                  <ThirdLeaderboardCard
-                    data={thirdsampleData3}
-                    type="listings"
-                  />
-                ) : (
-                  <ThirdLeaderboardCard data={thirdsampleData} type="default" />
-                )}
+                  <ThirdLeaderboardCard 
+                  data={initialSampleData}
+                    selectedLeader={selectedLeader}
+                     />
               </>
             )}
           </div>
@@ -410,7 +393,7 @@ const initialSampleData = [
   },
   {
     name: "Lily Adams",
-    saleListingValue: "340000",
+    saleListingValue: "3400000",
     rentListingValue: "3500202",
     salecommission: "9220202",
     rentcommission: "93242342",
@@ -457,184 +440,6 @@ const initialSampleData = [
     viewingPct: "1220%",
     saleListingsPct: "620%",
     rentListingsPct: "120%",
-  },
-];
-
-const thirdsampleData = [
-  {
-    name: "Lara Boyd",
-
-    rank: "4",
-    icon: <CiDollar style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-    icondollar: dollarcoin,
-    iconlabel: iconlabel,
-    commission: "92.2k",
-    dealAverage: "381.5k",
-    closed: 9,
-    dealPercentage: "70%",
-  },
-  {
-    name: "Devin Cook",
-
-    rank: "5",
-    icon: <BsCash style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-    icondollar: dollarcoin,
-    iconlabel: iconlabel,
-    commission: "92.2k",
-    dealAverage: "381.5k",
-    closed: 9,
-    dealPercentage: "60%",
-  },
-  {
-    name: "Jennifer McKay",
-
-    rank: "6",
-    commission: "92.2k",
-    icon: (
-      <MdLabelOutline
-        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-      />
-    ),
-    icondollar: dollarcoin,
-    iconlabel: iconlabel,
-    dealAverage: "381.5k",
-    closed: 9,
-    dealPercentage: "180%",
-  },
-  {
-    name: "Lara Boyd",
-
-    rank: "4",
-    icon: <CiDollar style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-    icondollar: dollarcoin,
-    iconlabel: iconlabel,
-    commission: "92.2k",
-    dealAverage: "381.5k",
-    closed: 9,
-    dealPercentage: "70%",
-  },
-  {
-    name: "Devin",
-
-    rank: "5",
-    icon: <BsCash style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-    icondollar: dollarcoin,
-    iconlabel: iconlabel,
-    commission: "92.2k",
-    dealAverage: "381.5k",
-    closed: 9,
-    dealPercentage: "60%",
-  },
-  {
-    name: "Jennifer ",
-
-    rank: "6",
-    commission: "92.2k",
-    icon: (
-      <MdLabelOutline
-        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-      />
-    ),
-    icondollar: dollarcoin,
-    iconlabel: iconlabel,
-    dealAverage: "381.5k",
-    closed: 9,
-    dealPercentage: "180%",
-  },
-];
-
-const thirdsampleData1 = [
-  {
-    name: "Lara Boyd",
-
-    rank: "4",
-    icon: (
-      <MdOutlineCall style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />
-    ),
-    calls: "49",
-    dealPercentage: "90%",
-    iconp: (
-      <LiaPercentageSolid
-        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-      />
-    ),
-  },
-  {
-    name: "Devin Cook",
-
-    rank: "5",
-    icon: (
-      <MdOutlineCall style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />
-    ),
-    calls: "23",
-    dealPercentage: "80%",
-    iconp: (
-      <LiaPercentageSolid
-        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-      />
-    ),
-  },
-  {
-    name: "Jennifer McKay",
-
-    rank: "6",
-    commission: "92.2k",
-    icon: (
-      <MdOutlineCall style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />
-    ),
-    calls: "25",
-    dealPercentage: "70%",
-    iconp: (
-      <LiaPercentageSolid
-        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-      />
-    ),
-  },
-];
-const thirdsampleData2 = [
-  {
-    name: "Lara Boyd",
-
-    rank: "4",
-    viewing: "400",
-    dealPercentage: "70%",
-  },
-  {
-    name: "Devin Cook",
-
-    rank: "5",
-    viewing: "400",
-    dealPercentage: "50%",
-  },
-  {
-    name: "Jennifer McKay",
-
-    rank: "6",
-    viewing: "400",
-    dealPercentage: "90%",
-  },
-];
-const thirdsampleData3 = [
-  {
-    name: "Lara Boyd",
-
-    rank: "4",
-    listing: "36",
-    dealPercentage: "90%",
-  },
-  {
-    name: "Devin Cook",
-
-    rank: "5",
-    listing: "27",
-    dealPercentage: "60%",
-  },
-  {
-    name: "Jennifer McKay",
-
-    rank: "6",
-    listing: "72",
-    dealPercentage: "50%",
   },
 ];
 
