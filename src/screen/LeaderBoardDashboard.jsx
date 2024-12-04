@@ -23,9 +23,9 @@ const LeaderBoardDashboard = () => {
   useEffect(() => {
     if (selectedLeader.value === 'leaders') {
       setSampleData(initialSampleData);
-    } else if (selectedLeader.value === 'leaders2') {
+    } else if (selectedLeader.value === 'calls') {
       setSampleData(initialSampleData1);
-    } else if (selectedLeader.value === 'leaders3') {
+    } else if (selectedLeader.value === 'viewings') {
       setSampleData(initialSampleData2);
     } else if (selectedLeader.value === 'leaders4') {
       setSampleData(initialSampleData3);
@@ -426,8 +426,8 @@ const thirdsampleData = [
 
 const leaderOptions = [
   { label: 'Deals Dashboard', value: 'leaders' },
-  { label: 'Calls Dashboard', value: 'leaders2' },
-  { label: 'Viewings Dashboard', value: 'leaders3' } ,   
+  { label: 'Calls Dashboard', value: 'calls' },
+  { label: 'Viewings Dashboard', value: 'viewings' } ,   
   { label: 'Listing Dashboard', value: 'leaders4' }, 
   { label: 'Total Dashboard', value: 'leaders5' },
   { label: 'Reports', value: 'leaders6' }

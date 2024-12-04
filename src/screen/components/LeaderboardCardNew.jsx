@@ -332,37 +332,17 @@ const LeaderBoardDashboard = () => {
             ) : (
               <>
                 <LeaderbordCard data={sampleData} selectedLeader={selectedLeader} />
+                <SecondLeaderboardCard
+                    totals="2043M"
+                    commission="100M"
+                    closed="9"
+                    percentage="90%"
+                    selectedLeader={selectedLeader}
+                  />
 
-                {selectedLeader.value === "leaders2" ? (
-                  <SecondLeaderboardCard
-                    data={secondsampleData1}
-                    title="Calls Data"
-                  />
-                ) : selectedLeader.value === "leaders3" ? (
-                  <SecondLeaderboardCard
-                    data={secondsampleData2}
-                    title="Viewing Data"
-                  />
-                ) : selectedLeader.value === "salesListing" || selectedLeader.value === "rentalListing" ? (
-                  <SecondLeaderboardCard
-                    data={secondsampleData3}
-                    title="Listing Data"
-                  />
-                ) : selectedLeader.value === "leaders4" ? (
-                  <SecondLeaderboardCard
-                    data={secondsampleData3}
-                    title="New Data for Leader 4"
-                  />
-                ) : (
-                  <SecondLeaderboardCard
-                    data={secondsampleData}
-                    title="Default Data"
-                  />
-                )}
-
-                {selectedLeader.value === "leaders2" ? (
+                {selectedLeader.value === "calls" ? (
                   <ThirdLeaderboardCard data={thirdsampleData1} type="calls" />
-                ) : selectedLeader.value === "leaders3" ? (
+                ) : selectedLeader.value === "viewings" ? (
                   <ThirdLeaderboardCard
                     data={thirdsampleData2}
                     type="viewings"
@@ -477,89 +457,6 @@ const initialSampleData = [
     viewingPct: "1220%",
     saleListingsPct: "620%",
     rentListingsPct: "120%",
-  },
-];
-const secondsampleData = [
-  {
-    icon: <CiDollar style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-    totalEarning: "2.7M",
-    status: "Total Deals",
-  },
-  {
-    icon: <BsCash style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-    totalEarning: "3.4M",
-    status: "Total Commision",
-  },
-  {
-    icon: (
-      <MdLabelOutline
-        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-      />
-    ),
-    totalEarning: "2.4M",
-    status: "Total Close",
-  },
-  {
-    icon: (
-      <LiaPercentageSolid
-        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-      />
-    ),
-    totalEarning: "90%",
-    status: "Total Percentage",
-  },
-];
-const secondsampleData1 = [
-  {
-    icon: (
-      <MdOutlineCall style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />
-    ),
-    totalEarning: "100",
-    status: "Total Calls",
-  },
-  {
-    icon: (
-      <LiaPercentageSolid
-        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-      />
-    ),
-    totalEarning: "60%",
-    status: "Total Percentage",
-  },
-];
-const secondsampleData2 = [
-  {
-    icon: (
-      <CiViewBoard style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />
-    ),
-    totalEarning: "100",
-    status: "Total Viewing",
-  },
-  {
-    icon: (
-      <LiaPercentageSolid
-        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-      />
-    ),
-    totalEarning: "80%",
-    status: "Total Percentage",
-  },
-];
-
-const secondsampleData3 = [
-  {
-    icon: <BiListUl style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-    totalEarning: "100",
-    status: "Total Listing",
-  },
-  {
-    icon: (
-      <LiaPercentageSolid
-        style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}
-      />
-    ),
-    totalEarning: "90%",
-    status: "Total Percentage",
   },
 ];
 
@@ -753,12 +650,12 @@ const leaderOptions = [
   },
   {
     label: "Calls Dashboard",
-    value: "leaders2",
+    value: "calls",
     icon: <MdOutlineCall />,
   },
   {
     label: "Viewings Dashboard",
-    value: "leaders3",
+    value: "viewings",
     icon: <CiViewBoard />,
   },
   {

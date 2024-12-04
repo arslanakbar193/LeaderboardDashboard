@@ -14,15 +14,15 @@ const LeaderboradCard = ({ data, selectedLeader }) => {
     saleDeals: <CiDollar />,
     rentalDeals: <CiDollar />,
     leaders: <CiDollar style={{ fontSize: "50px" }} />,
-    leaders2: <MdOutlineCall style={{ fontSize: "50px" }} />,
-    leaders3: <CiViewBoard style={{ fontSize: "50px" }} />,
+    calls: <MdOutlineCall style={{ fontSize: "50px" }} />,
+    viewings: <CiViewBoard style={{ fontSize: "50px" }} />,
     leaders4: <BiListUl style={{ fontSize: "50px" }} />,
   };
   const titleMap = {
     saleDeals: "Total Deals",
     rentalDeals: "Total Deals",
-    leaders2: "Total Calls",
-    leaders3: "Total Viewings",
+    calls: "Total Calls",
+    viewings: "Total Viewings",
     salesListing: "Total Listing",
     rentalListing: "Total Listing",
   };
@@ -39,10 +39,10 @@ const LeaderboradCard = ({ data, selectedLeader }) => {
       case "rentalDeals":
         setFilteredData(data.sort((a, b) => b.rentListingValue - a.rentListingValue).slice(0, 3));
         break;
-      case "leaders2":
+      case "calls":
         setFilteredData(data.sort((a, b) => b.phoneCalls - a.phoneCalls).slice(0, 3));
         break;
-      case "leaders3":
+      case "viewings":
         setFilteredData(data.sort((a, b) => b.noOfViewings - a.noOfViewings).slice(0, 3));
         break;
       case "salesListing":
@@ -88,7 +88,7 @@ const LeaderboradCard = ({ data, selectedLeader }) => {
                 <div className="earning">
                   {iconMap[selectedLeader.value]}
                   {selectedLeader.value == "saleDeals" ? NumberConversion(item.saleListingValue) : (selectedLeader.value == "rentalDeals" ? NumberConversion(item.rentListingValue) :
-                    (selectedLeader.value == "leaders2" ? item.phoneCalls : (selectedLeader.value == "leaders3" ? item.noOfViewings :
+                    (selectedLeader.value == "calls" ? item.phoneCalls : (selectedLeader.value == "viewings" ? item.noOfViewings :
                       (selectedLeader.value == "salesListing" ? item.saleListings : item.rentListings)
                     )))}
                 </div>
@@ -97,7 +97,7 @@ const LeaderboradCard = ({ data, selectedLeader }) => {
 
                 {/* Apply 'center-items' class for 'Viewing' and 'Listing' dashboards */}
                 <div
-                  className={`flex deals-info ${["leaders2", "leaders3", "leaders4", "salesListing", "rentalListing"].includes(
+                  className={`flex deals-info ${["calls", "viewings", "leaders4", "salesListing", "rentalListing"].includes(
                     selectedLeader.value
                   )
                     ? "center-items"
@@ -125,7 +125,7 @@ const LeaderboradCard = ({ data, selectedLeader }) => {
                       style={{ fontSize: "25px", color: "#1f7bc1" }}
                     />
                     {selectedLeader.value == "saleDeals" ? item.saleDealsPct : (selectedLeader.value == "rentalDeals" ? item.rentDealsPct :
-                      (selectedLeader.value == "leaders2" ? item.callsPct : (selectedLeader.value == "leaders3" ? item.viewingPct :
+                      (selectedLeader.value == "calls" ? item.callsPct : (selectedLeader.value == "viewings" ? item.viewingPct :
                         (selectedLeader.value == "salesListing" ? item.saleListingsPct : item.rentListingsPct)
                       )))}
                   </div>
