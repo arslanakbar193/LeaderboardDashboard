@@ -8,6 +8,8 @@ import { CiViewBoard } from "react-icons/ci";
 import { BiListUl } from "react-icons/bi";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import Avatar from "../../images/avatar.png";
+import { NumberConversion } from '../components/common/CommonFunctions';
+
 const LeaderboradCard = ({ data, selectedLeader }) => {
   const [filteredData, setFilteredData] = useState([]);
   const iconMap = {
@@ -55,17 +57,6 @@ const LeaderboradCard = ({ data, selectedLeader }) => {
         setFilteredData(data.slice(0, 3));
     }
   }, [selectedLeader.value]);
-  
-
-  function NumberConversion (labelValue) {
-    return Math.abs(Number(labelValue)) >= 1.0e+9
-    ? (Math.abs(Number(labelValue)) / 1.0e+9).toFixed(2) + "B"
-    : Math.abs(Number(labelValue)) >= 1.0e+6
-    ? (Math.abs(Number(labelValue)) / 1.0e+6).toFixed(2) + "M"
-    : Math.abs(Number(labelValue)) >= 1.0e+3
-    ? (Math.abs(Number(labelValue)) / 1.0e+3).toFixed(2) + "K"
-    : Math.abs(Number(labelValue));
-  }
 
   return (
     <>

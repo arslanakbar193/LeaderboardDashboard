@@ -8,6 +8,7 @@ import { MdOutlineCall } from "react-icons/md";
 import { CiViewBoard } from "react-icons/ci";
 import { BiListUl } from "react-icons/bi";
 import Avatar from "../../images/avatar.png";
+import { NumberConversion } from '../components/common/CommonFunctions';
 
 const ThirdLeaderboardCard = ({ data, selectedLeader }) => {
   const [filteredData, setFilteredData] = useState([]);
@@ -58,17 +59,6 @@ const ThirdLeaderboardCard = ({ data, selectedLeader }) => {
     }
   }, [selectedLeader.value]);
 
-
-  function NumberConversion(labelValue) {
-    return Math.abs(Number(labelValue)) >= 1.0e+9
-      ? (Math.abs(Number(labelValue)) / 1.0e+9).toFixed(2) + "B"
-      : Math.abs(Number(labelValue)) >= 1.0e+6
-        ? (Math.abs(Number(labelValue)) / 1.0e+6).toFixed(2) + "M"
-        : Math.abs(Number(labelValue)) >= 1.0e+3
-          ? (Math.abs(Number(labelValue)) / 1.0e+3).toFixed(2) + "K"
-          : Math.abs(Number(labelValue));
-  }
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
@@ -106,7 +96,12 @@ const ThirdLeaderboardCard = ({ data, selectedLeader }) => {
               </div>
               <div className="card-right">
                 <div className="profile-name text-left">{item.name}</div>
-                <RangeSlider />
+                <RangeSlider 
+                value = {selectedLeader.value == "saleDeals" ? item.saleDealsPct : (selectedLeader.value == "rentalDeals" ? item.rentDealsPct :
+                  (selectedLeader.value == "calls" ? item.callsPct : (selectedLeader.value == "viewings" ? item.viewingPct :
+                    (selectedLeader.value == "salesListing" ? item.saleListingsPct : item.rentListingsPct)
+                  )))}
+                />
                 <div
                   className={`flex deals-info justify-between ${!isDealsDashboard ? "start-items" : ""}`} >
                   <div className="flex align-center pl-5">

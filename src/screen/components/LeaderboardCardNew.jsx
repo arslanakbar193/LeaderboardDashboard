@@ -11,6 +11,7 @@ import TotalDashboard from "../components/TotalDashboard";
 import { MdSpaceDashboard } from "react-icons/md";
 import ReportsTable from "./NewReports";
 import AgentReportsTable from "./AgentReport";
+import { NumberConversion } from '../components/common/CommonFunctions';
 
 import FullscreenToggle from "../components/FullScreen";
 import { HiDocumentReport, HiOutlineDocumentReport } from "react-icons/hi";
@@ -25,6 +26,7 @@ const LeaderBoardDashboard = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedYear, setSelectedYear] = useState(everyyearOptions[0]);
   const [sampleData, setSampleData] = useState([]);
+  const [dataTotals, setDataTotals] = useState({});
   const [token, setToken] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -38,7 +40,7 @@ const LeaderBoardDashboard = () => {
       if (!u || !g) {
         setLoading(false);
         setSampleData(initialSampleData);
-        // Close window if parameters are missing
+
         // window.open("about:blank", "_self");
         // window.close();
       } else {
@@ -78,7 +80,7 @@ const LeaderBoardDashboard = () => {
         console.log(responseData, "Leaderbord data");
 
         const transformedData = responseData.data.map(item => {
-          const kpi = item.KPI ? JSON.parse(item.KPI) : {}; // Parse KPI or fallback to an empty object
+          const kpi = item.KPI ? JSON.parse(item.KPI) : {};
 
           const saleDeals = parseFloat(kpi.saleDeals ?? 0);
           const rentDeals = parseFloat(kpi.rentDeals ?? 0);
@@ -105,16 +107,62 @@ const LeaderBoardDashboard = () => {
             viewingTarget: viewing,
             saleListingsTarget: saleListings,
             rentListingsTarget: rentListings,
-            saleDealsPct: saleDeals ? ((item.sale_listings_value / saleDeals) * 100).toFixed(2) + '%' : '0%',
-            rentDealsPct: rentDeals ? ((item.rent_listings_value / rentDeals) * 100).toFixed(2) + '%' : '0%',
-            callsPct: calls ? ((item.phone_calls / calls) * 100).toFixed(2) + '%' : '0%',
-            viewingPct: viewing ? ((item.no_of_viewings / viewing) * 100).toFixed(2) + '%' : '0%',
-            saleListingsPct: saleListings ? ((item.sale_new_listings / saleListings) * 100).toFixed(2) + '%' : '0%',
-            rentListingsPct: rentListings ? ((item.rent_new_listings / rentListings) * 100).toFixed(2) + '%' : '0%',
+            saleDealsPct: saleDeals ? ((item.sale_listings_value / saleDeals) * 100).toFixed(2) + '%' : '0.00%',
+            rentDealsPct: rentDeals ? ((item.rent_listings_value / rentDeals) * 100).toFixed(2) + '%' : '0.00%',
+            callsPct: calls ? ((item.phone_calls / calls) * 100).toFixed(2) + '%' : '0.00%',
+            viewingPct: viewing ? ((item.no_of_viewings / viewing) * 100).toFixed(2) + '%' : '0.00%',
+            saleListingsPct: saleListings ? ((item.sale_new_listings / saleListings) * 100).toFixed(2) + '%' : '0.00%',
+            rentListingsPct: rentListings ? ((item.rent_new_listings / rentListings) * 100).toFixed(2) + '%' : '0.00%',
           };
         });
 
-        // Set the transformed data
+        const totals = transformedData.reduce((acc, item) => {
+          acc.saleListingValue += parseFloat(item.saleListingValue ?? 0);
+          acc.rentListingValue += parseFloat(item.rentListingValue ?? 0);
+          acc.salecommission += parseFloat(item.salecommission ?? 0);
+          acc.rentcommission += parseFloat(item.rentcommission ?? 0);
+          acc.saleListingsclosed += parseFloat(item.saleListingsclosed ?? 0);
+          acc.rentListingsclosed += parseFloat(item.rentListingsclosed ?? 0);
+          acc.phoneCalls += parseFloat(item.phoneCalls ?? 0);
+          acc.noOfViewings += parseFloat(item.noOfViewings ?? 0);
+          acc.saleListings += parseFloat(item.saleListings ?? 0);
+          acc.rentListings += parseFloat(item.rentListings ?? 0);
+          acc.saleDealsTarget += parseFloat(item.saleDealsTarget ?? 0);
+          acc.rentDealsTarget += parseFloat(item.rentDealsTarget ?? 0);
+          acc.callsTarget += parseFloat(item.callsTarget ?? 0);
+          acc.viewingTarget += parseFloat(item.viewingTarget ?? 0);
+          acc.saleListingsTarget += parseFloat(item.saleListingsTarget ?? 0);
+          acc.rentListingsTarget += parseFloat(item.rentListings ?? 0);
+          return acc;
+        }, {
+          saleListingValue: 0,
+          rentListingValue: 0,
+          salecommission: 0,
+          rentcommission: 0,
+          saleListingsclosed: 0,
+          rentListingsclosed: 0,
+          phoneCalls: 0,
+          noOfViewings: 0,
+          saleListings: 0,
+          rentListings: 0,
+          saleDealsTarget: 0,
+          rentDealsTarget: 0,
+          callsTarget: 0,
+          viewingTarget: 0,
+          saleListingsTarget: 0,
+          rentListingsTarget: 0,
+        });
+
+        const percentageTotals = {
+          saleDealsPct: totals.saleDealsTarget ? ((totals.saleListingValue / totals.saleDealsTarget) * 100).toFixed(2) + '%' : '0.00%',
+          rentDealsPct: totals.rentDealsTarget ? ((totals.rentListingValue / totals.rentDealsTarget) * 100).toFixed(2) + '%' : '0.00%',
+          callsPct: totals.callsTarget ? ((totals.phoneCalls / totals.callsTarget) * 100).toFixed(2) + '%' : '0.00%',
+          viewingPct: totals.viewingTarget ? ((totals.noOfViewings / totals.viewingTarget) * 100).toFixed(2) + '%' : '0.00%',
+          saleListingsPct: totals.saleListingsTarget ? ((totals.saleListings / totals.saleListingsTarget) * 100).toFixed(2) + '%' : '0.00%',
+          rentListingsPct: totals.rentListingsTarget ? ((totals.rentListings / totals.rentListingsTarget) * 100).toFixed(2) + '%' : '0.00%',
+        };
+        setDataTotals({ ...totals, ...percentageTotals });
+
         setSampleData(transformedData);
 
       } else {
@@ -161,6 +209,7 @@ const LeaderBoardDashboard = () => {
       onSelectedChange([...selected, option]);
     }
   };
+
 
   return (
     <>
@@ -314,10 +363,17 @@ const LeaderBoardDashboard = () => {
               <>
                 <LeaderbordCard data={sampleData} selectedLeader={selectedLeader} />
                 <SecondLeaderboardCard
-                  totals="2043M"
-                  commission="100M"
-                  closed="9"
-                  percentage="90%"
+                  totals={selectedLeader.value == "saleDeals" ? NumberConversion(dataTotals.saleListingValue) : (selectedLeader.value == "rentalDeals" ? NumberConversion(dataTotals.rentListingValue) :
+                    (selectedLeader.value == "calls" ? dataTotals.phoneCalls : (selectedLeader.value == "viewings" ? dataTotals.noOfViewings :
+                      (selectedLeader.value == "salesListing" ? dataTotals.saleListings : dataTotals.rentListings)
+                    )))}
+                  commission={selectedLeader.value == "saleDeals" ? NumberConversion(dataTotals.salecommission) : (selectedLeader.value == "rentalDeals" ? 
+                    NumberConversion(dataTotals.rentcommission) : 0)}
+                  closed={selectedLeader.value == "saleDeals" ? dataTotals.saleListingsclosed : (selectedLeader.value == "rentalDeals" ? dataTotals.rentListingsclosed : 0)}
+                  percentage={selectedLeader.value == "saleDeals" ? dataTotals.saleDealsPct : (selectedLeader.value == "rentalDeals" ? dataTotals.rentDealsPct :
+                    (selectedLeader.value == "calls" ? dataTotals.callsPct : (selectedLeader.value == "viewings" ? dataTotals.viewingPct :
+                      (selectedLeader.value == "salesListing" ? dataTotals.saleListingsPct : dataTotals.rentListingsPct)
+                    )))}
                   selectedLeader={selectedLeader}
                 />
                 <ThirdLeaderboardCard

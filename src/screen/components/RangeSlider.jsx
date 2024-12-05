@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const RangeSlider = () => {
-    const [value, setValue] = useState(50);
+const RangeSlider = ({ value: initialValue = 0 }) => {
+    const [value, setValue] = useState(initialValue);
 
     const handleChange = (event) => {
         setValue(event.target.value);
     };
+
+    useEffect(() => {
+        setValue(initialValue.replace("%", "")); 
+    }, [initialValue]);
 
     const sliderStyle = {
         background: `linear-gradient(to right, #1f7bc1 ${value}%, #1f7bc129 ${value}%)`
