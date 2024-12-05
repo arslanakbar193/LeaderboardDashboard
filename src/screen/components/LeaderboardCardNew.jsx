@@ -3,13 +3,6 @@ import PropTypes from "prop-types";
 import LeaderbordCard from "../components/LeaderboradCard";
 import SecondLeaderboardCard from "../components/SecondLeaderboradCard";
 import ThirdLeaderboardCard from "../components/ThirdLeaderboradCard";
-import dollar from "../../images/dollar.png";
-import dollarcoin from "../../images/dollar-coin.png";
-import iconlabel from "../../images/label.png";
-import { CiDollar } from "react-icons/ci";
-import { BsCash } from "react-icons/bs";
-import { MdLabelOutline } from "react-icons/md";
-import { LiaPercentageSolid } from "react-icons/lia";
 import { MdOutlineCall } from "react-icons/md";
 import { CiViewBoard } from "react-icons/ci";
 import { BiListUl } from "react-icons/bi";
@@ -18,7 +11,6 @@ import TotalDashboard from "../components/TotalDashboard";
 import { MdSpaceDashboard } from "react-icons/md";
 import ReportsTable from "./NewReports";
 import AgentReportsTable from "./AgentReport";
-import { fetchWithTokenRetry } from '../components/common/CommonFunctions';
 
 import FullscreenToggle from "../components/FullScreen";
 import { HiDocumentReport, HiOutlineDocumentReport } from "react-icons/hi";
@@ -32,61 +24,45 @@ const LeaderBoardDashboard = () => {
   const [selectedMonths, setSelectedMonths] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedYear, setSelectedYear] = useState(everyyearOptions[0]);
-  const [sampleData, setSampleData] = useState(initialSampleData);
+  const [sampleData, setSampleData] = useState([]);
   const [token, setToken] = useState('');
+  const [loading, setLoading] = useState(true);
 
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (window.ZoneMasterGlobels && window.application) {
-        setEnvironment();
-        clearInterval(interval);
-      }
-    }, 100);
+    const validateEnvironment = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const u = urlParams.get('u');
+      const g = urlParams.get('g');
 
-    return () => clearInterval(interval);
+      if (!u || !g) {
+        setLoading(false);
+        setSampleData(initialSampleData);
+        // Close window if parameters are missing
+        // window.open("about:blank", "_self");
+        // window.close();
+      } else {
+        setEnvironment(`APITOKEN:U${u}G${g}`);
+      }
+    };
+
+    validateEnvironment();
   }, []);
 
 
   useEffect(() => {
-    if (token && token !== '') {
+    if (token) {
       console.log("Token received");
       console.log(token);
-      // console.log(ApiUrl);
-      // getUserData();
-      getUserData1();
+      getUserData();
 
     }
   }, [token]);
 
   const getUserData = async () => {
+    setLoading(true);
     try {
-      const response = await fetchWithTokenRetry(
-        ApiUrl + '/leaderboard/KPI',
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            'Authorization': token
-          }
-        }
-      );
-      // console.log(response);
-      if (response && response.ok) {
-        const data = await response.json();
-
-      } else {
-        console.error("Failed to fetch data:", response.status, response.statusText);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-
-  const getUserData1 = async () => {
-    try {
-      const response = await fetchWithTokenRetry(
+      const response = await fetch(
         ApiUrl + '/leaderboard',
         {
           method: "GET",
@@ -96,6 +72,7 @@ const LeaderBoardDashboard = () => {
           }
         }
       );
+      console.log(response);
       if (response && response.ok) {
         const responseData = await response.json();
         console.log(responseData, "Leaderbord data");
@@ -145,6 +122,8 @@ const LeaderBoardDashboard = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -152,12 +131,12 @@ const LeaderBoardDashboard = () => {
   //   setSampleData(initialSampleData);
   // }, [selectedLeader]);
 
-  const setEnvironment = () => {
+  const setEnvironment = (APIToken) => {
     if (process.env.NODE_ENV === 'development') {
       setToken('bearer hosLKzrH8zEyEUq9KLgo6DOV-tWq67D5tGedfoQW7zM_dUuNIpuq4fRSp2tbafk2z7UrKzTnfao-XhoKWin6zwz2igXLMTvnW_3nw5jPnT4um3J1_EtNnRhoFIEzlNUAFOn4G_fipnEYMBiYQa0KhfBwmJ1J4UoJdexYT-8qj86p6J79LK3AAoRNIdY2rZbmbPudLxLiCLxO9FCD3VFcWMN0q-wqFuyvqXFz7ONZ2Mk1ok43C1cBHjYa-MBxnQxu4x0L2um6BjIG16GkS1BDJkdvJLi1vfgjA_42bozCh5oPuRraXTbj20AKOqHDT1WWnoZyEYgmt3vl7HsuznIpDpxDXD2k9b-tTCB9hcom1M5F-vhT7Xk2v7MmI01M6rZLykgBY4TjPfzUHuUO6tlzU2_KrrUrVIRC_Y4rvtZeA3qhCgM4d2iZvyC9EzW3DM5nl9TTqWU05BUlvHCoqlFbX2xVHR7mhHhUGq66h4iMV44ke0Zd01T_eiFjOC9C94_CNM5A3HSbhYZirPdzEL2QEvBweZZh3tBzMxD0kFd85gM');
     }
     else {
-      setToken(`Bearer ${JSON.parse(localStorage.jStorage)[window.parent.application.context.get_apiTokenKey()]}`);
+      setToken(`Bearer ${JSON.parse(localStorage.jStorage)[APIToken]}`);
     }
   };
 
@@ -329,20 +308,22 @@ const LeaderBoardDashboard = () => {
               <ReportsTable />
             ) : selectedLeader.value === "leaders5" ? (
               <TotalDashboard data={sampleData} />
+            ) : loading ? ( // Display loading state
+              <div>Loading...</div>
             ) : (
               <>
                 <LeaderbordCard data={sampleData} selectedLeader={selectedLeader} />
                 <SecondLeaderboardCard
-                    totals="2043M"
-                    commission="100M"
-                    closed="9"
-                    percentage="90%"
-                    selectedLeader={selectedLeader}
-                  />
-                  <ThirdLeaderboardCard 
-                  data={initialSampleData}
-                    selectedLeader={selectedLeader}
-                     />
+                  totals="2043M"
+                  commission="100M"
+                  closed="9"
+                  percentage="90%"
+                  selectedLeader={selectedLeader}
+                />
+                <ThirdLeaderboardCard
+                  data={sampleData}
+                  selectedLeader={selectedLeader}
+                />
               </>
             )}
           </div>
@@ -440,6 +421,80 @@ const initialSampleData = [
     viewingPct: "1220%",
     saleListingsPct: "620%",
     rentListingsPct: "120%",
+  }, {
+    name: "Emily",
+    saleListingValue: "34320000",
+    rentListingValue: "350020432",
+    salecommission: "924320202",
+    rentcommission: "9324235342",
+    saleListingsclosed: 9,
+    rentListingsclosed: 10,
+    phoneCalls: "449",
+    noOfViewings: "3300",
+    saleListings: "335",
+    rentListings: "461",
+    saleDealsTarget: "500433",
+    rentDealsTarget: "64334",
+    callsTarget: "1540",
+    viewingTarget: "550",
+    saleListingsTarget: "260",
+    rentListingsTarget: "930",
+    saleDealsPct: "443.9%",
+    rentDealsPct: "19%",
+    callsPct: "202%",
+    viewingPct: "123%",
+    saleListingsPct: "30%",
+    rentListingsPct: "90%",
+  },
+  {
+    name: "Lily",
+    saleListingValue: "30000",
+    rentListingValue: "35202",
+    salecommission: "90202",
+    rentcommission: "932342",
+    saleListingsclosed: 93,
+    rentListingsclosed: 104,
+    phoneCalls: "349",
+    noOfViewings: "3040",
+    saleListings: "353",
+    rentListings: "441",
+    saleDealsTarget: "5004433",
+    rentDealsTarget: "643434",
+    callsTarget: "150",
+    viewingTarget: "50",
+    saleListingsTarget: "20",
+    rentListingsTarget: "90",
+    saleDealsPct: "4943.9%",
+    rentDealsPct: "849%",
+    callsPct: "240%",
+    viewingPct: "1420%",
+    saleListingsPct: "460%",
+    rentListingsPct: "140%",
+  },
+  {
+    name: "Sarah",
+    saleListingValue: "34000",
+    rentListingValue: "350202",
+    salecommission: "922022",
+    rentcommission: "9324342",
+    saleListingsclosed: 2,
+    rentListingsclosed: 3,
+    phoneCalls: "9",
+    noOfViewings: "30",
+    saleListings: "3",
+    rentListings: "4",
+    saleDealsTarget: "50003433",
+    rentDealsTarget: "6434344",
+    callsTarget: "10",
+    viewingTarget: "2",
+    saleListingsTarget: "2",
+    rentListingsTarget: "9",
+    saleDealsPct: "493.9%",
+    rentDealsPct: "89%",
+    callsPct: "205%",
+    viewingPct: "120%",
+    saleListingsPct: "62%",
+    rentListingsPct: "12%",
   },
 ];
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import RangeSlider from "./RangeSlider";
 import { CiDollar } from "react-icons/ci";
 import { BsCash } from "react-icons/bs";
@@ -32,30 +32,31 @@ const ThirdLeaderboardCard = ({ data, selectedLeader }) => {
     selectedLeader.value
   );
 
-  // useEffect(() => {
-  //   switch (selectedLeader.value) {
-  //     case "saleDeals":
-  //       setFilteredData(data.sort((a, b) => b.saleListingValue - a.saleListingValue).slice(0, 3));
-  //       break;
-  //     case "rentalDeals":
-  //       setFilteredData(data.sort((a, b) => b.rentListingValue - a.rentListingValue).slice(0, 3));
-  //       break;
-  //     case "calls":
-  //       setFilteredData(data.sort((a, b) => b.phoneCalls - a.phoneCalls).slice(0, 3));
-  //       break;
-  //     case "viewings":
-  //       setFilteredData(data.sort((a, b) => b.noOfViewings - a.noOfViewings).slice(0, 3));
-  //       break;
-  //     case "salesListing":
-  //       setFilteredData(data.sort((a, b) => b.saleListings - a.saleListings).slice(0, 3));
-  //       break;
-  //     case "rentalListing":
-  //       setFilteredData(data.sort((a, b) => b.rentListings - a.rentListings).slice(0, 3));
-  //       break;
-  //     default:
-  //       setFilteredData(data.slice(0, 3));
-  //   }
-  // }, [selectedLeader.value]);
+  useEffect(() => {
+    
+    switch (selectedLeader.value) {
+      case "saleDeals":
+        setFilteredData(data.sort((a, b) => b.saleListingValue - a.saleListingValue).slice(3));
+        break;
+      case "rentalDeals":
+        setFilteredData(data.sort((a, b) => b.rentListingValue - a.rentListingValue).slice(3));
+        break;
+      case "calls":
+        setFilteredData(data.sort((a, b) => b.phoneCalls - a.phoneCalls).slice(3));
+        break;
+      case "viewings":
+        setFilteredData(data.sort((a, b) => b.noOfViewings - a.noOfViewings).slice(3));
+        break;
+      case "salesListing":
+        setFilteredData(data.sort((a, b) => b.saleListings - a.saleListings).slice(3));
+        break;
+      case "rentalListing":
+        setFilteredData(data.sort((a, b) => b.rentListings - a.rentListings).slice(3));
+        break;
+      default:
+        setFilteredData(data.slice(3));
+    }
+  }, [selectedLeader.value]);
 
 
   function NumberConversion(labelValue) {
@@ -93,9 +94,9 @@ const ThirdLeaderboardCard = ({ data, selectedLeader }) => {
   return (
     <div className="card-wrapper card-wrapper-third">
       <div className="card-items">
-        {currentData &&
-          currentData.length > 0 &&
-          currentData.map((item, index) => (
+        {filteredData &&
+          filteredData.length > 0 &&
+          filteredData.map((item, index) => (
             <div className="cards" key={index}>
               <div className="card-left center-items">
                 <div>

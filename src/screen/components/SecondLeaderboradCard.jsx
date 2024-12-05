@@ -27,9 +27,7 @@ const LeaderboradCard = ({ totals, commission, closed, percentage, selectedLeade
   const isDealsDashboard = ["leaders", "saleDeals", "rentalDeals"].includes(
     selectedLeader.value
   );
-  // useEffect(() => {
-  //   console.log(data);
-  // }, data);
+  
   return (
     <>
       <div className="card-wrapper card-wrapper-second">
