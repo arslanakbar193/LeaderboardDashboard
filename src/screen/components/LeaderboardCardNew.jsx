@@ -40,6 +40,7 @@ const LeaderBoardDashboard = () => {
       if (!u || !g) {
         setLoading(false);
         setSampleData(initialSampleData);
+        setDataTotals({ ...sampleDataTotals, ...sampleDataPercentageTotals });
 
         // window.open("about:blank", "_self");
         // window.close();
@@ -162,6 +163,9 @@ const LeaderBoardDashboard = () => {
           rentListingsPct: totals.rentListingsTarget ? ((totals.rentListings / totals.rentListingsTarget) * 100).toFixed(2) + '%' : '0.00%',
         };
         setDataTotals({ ...totals, ...percentageTotals });
+        console.log('Totals:', totals);
+        console.log('Percentage Totals:', percentageTotals);
+        console.log('data totals:', { ...totals, ...percentageTotals });
 
         setSampleData(transformedData);
 
@@ -549,6 +553,51 @@ const initialSampleData = [
     rentListingsPct: "12%",
   },
 ];
+const sampleDataTotals = initialSampleData.reduce((acc, item) => {
+  acc.saleListingValue += parseFloat(item.saleListingValue ?? 0);
+  acc.rentListingValue += parseFloat(item.rentListingValue ?? 0);
+  acc.salecommission += parseFloat(item.salecommission ?? 0);
+  acc.rentcommission += parseFloat(item.rentcommission ?? 0);
+  acc.saleListingsclosed += parseFloat(item.saleListingsclosed ?? 0);
+  acc.rentListingsclosed += parseFloat(item.rentListingsclosed ?? 0);
+  acc.phoneCalls += parseFloat(item.phoneCalls ?? 0);
+  acc.noOfViewings += parseFloat(item.noOfViewings ?? 0);
+  acc.saleListings += parseFloat(item.saleListings ?? 0);
+  acc.rentListings += parseFloat(item.rentListings ?? 0);
+  acc.saleDealsTarget += parseFloat(item.saleDealsTarget ?? 0);
+  acc.rentDealsTarget += parseFloat(item.rentDealsTarget ?? 0);
+  acc.callsTarget += parseFloat(item.callsTarget ?? 0);
+  acc.viewingTarget += parseFloat(item.viewingTarget ?? 0);
+  acc.saleListingsTarget += parseFloat(item.saleListingsTarget ?? 0);
+  acc.rentListingsTarget += parseFloat(item.rentListings ?? 0);
+  return acc;
+}, {
+  saleListingValue: 0,
+  rentListingValue: 0,
+  salecommission: 0,
+  rentcommission: 0,
+  saleListingsclosed: 0,
+  rentListingsclosed: 0,
+  phoneCalls: 0,
+  noOfViewings: 0,
+  saleListings: 0,
+  rentListings: 0,
+  saleDealsTarget: 0,
+  rentDealsTarget: 0,
+  callsTarget: 0,
+  viewingTarget: 0,
+  saleListingsTarget: 0,
+  rentListingsTarget: 0,
+});
+
+const sampleDataPercentageTotals = {
+  saleDealsPct: sampleDataTotals.saleDealsTarget ? ((sampleDataTotals.saleListingValue / sampleDataTotals.saleDealsTarget) * 100).toFixed(2) + '%' : '0.00%',
+  rentDealsPct: sampleDataTotals.rentDealsTarget ? ((sampleDataTotals.rentListingValue / sampleDataTotals.rentDealsTarget) * 100).toFixed(2) + '%' : '0.00%',
+  callsPct: sampleDataTotals.callsTarget ? ((sampleDataTotals.phoneCalls / sampleDataTotals.callsTarget) * 100).toFixed(2) + '%' : '0.00%',
+  viewingPct: sampleDataTotals.viewingTarget ? ((sampleDataTotals.noOfViewings / sampleDataTotals.viewingTarget) * 100).toFixed(2) + '%' : '0.00%',
+  saleListingsPct: sampleDataTotals.saleListingsTarget ? ((sampleDataTotals.saleListings / sampleDataTotals.saleListingsTarget) * 100).toFixed(2) + '%' : '0.00%',
+  rentListingsPct: sampleDataTotals.rentListingsTarget ? ((sampleDataTotals.rentListings / sampleDataTotals.rentListingsTarget) * 100).toFixed(2) + '%' : '0.00%',
+};
 
 const leaderOptions = [
   {
