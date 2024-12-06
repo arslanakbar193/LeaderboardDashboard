@@ -34,30 +34,23 @@ const ThirdLeaderboardCard = ({ data, selectedLeader }) => {
   );
 
   useEffect(() => {
-    
-    switch (selectedLeader.value) {
-      case "saleDeals":
-        setFilteredData(data.sort((a, b) => b.saleListingValue - a.saleListingValue).slice(3));
-        break;
-      case "rentalDeals":
-        setFilteredData(data.sort((a, b) => b.rentListingValue - a.rentListingValue).slice(3));
-        break;
-      case "calls":
-        setFilteredData(data.sort((a, b) => b.phoneCalls - a.phoneCalls).slice(3));
-        break;
-      case "viewings":
-        setFilteredData(data.sort((a, b) => b.noOfViewings - a.noOfViewings).slice(3));
-        break;
-      case "salesListing":
-        setFilteredData(data.sort((a, b) => b.saleListings - a.saleListings).slice(3));
-        break;
-      case "rentalListing":
-        setFilteredData(data.sort((a, b) => b.rentListings - a.rentListings).slice(3));
-        break;
-      default:
-        setFilteredData(data.slice(3));
-    }
-  }, [selectedLeader.value]);
+    const valueKeyMap = {
+      saleDeals: "saleListingValue",
+      rentalDeals: "rentListingValue",
+      calls: "phoneCalls",
+      viewings: "noOfViewings",
+      salesListing: "saleListings",
+      rentalListing: "rentListings",
+    };
+  
+    const sortKey = valueKeyMap[selectedLeader.value];
+    const sortedData = sortKey
+      ? [...data].sort((a, b) => b[sortKey] - a[sortKey])
+      : [...data];
+  
+    setFilteredData(sortedData.slice(3));
+  }, [selectedLeader.value, data]);
+  
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;

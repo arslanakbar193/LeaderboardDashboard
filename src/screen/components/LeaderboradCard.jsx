@@ -6,7 +6,6 @@ import { LiaPercentageSolid } from "react-icons/lia";
 import { MdOutlineCall } from "react-icons/md";
 import { CiViewBoard } from "react-icons/ci";
 import { BiListUl } from "react-icons/bi";
-import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import Avatar from "../../images/avatar.png";
 import { NumberConversion } from '../components/common/CommonFunctions';
 
@@ -33,30 +32,47 @@ const LeaderboradCard = ({ data, selectedLeader }) => {
     selectedLeader.value
   );
 
+  const sortKeyMap = {
+    saleDeals: "saleListingValue",
+    rentalDeals: "rentListingValue",
+    calls: "phoneCalls",
+    viewings: "noOfViewings",
+    salesListing: "saleListings",
+    rentalListing: "rentListings",
+  };
+
   useEffect(() => {
-    switch (selectedLeader.value) {
-      case "saleDeals":
-        setFilteredData(data.sort((a, b) => b.saleListingValue - a.saleListingValue).slice(0, 3));
-        break;
-      case "rentalDeals":
-        setFilteredData(data.sort((a, b) => b.rentListingValue - a.rentListingValue).slice(0, 3));
-        break;
-      case "calls":
-        setFilteredData(data.sort((a, b) => b.phoneCalls - a.phoneCalls).slice(0, 3));
-        break;
-      case "viewings":
-        setFilteredData(data.sort((a, b) => b.noOfViewings - a.noOfViewings).slice(0, 3));
-        break;
-      case "salesListing":
-        setFilteredData(data.sort((a, b) => b.saleListings - a.saleListings).slice(0, 3));
-        break;
-      case "rentalListing":
-        setFilteredData(data.sort((a, b) => b.rentListings - a.rentListings).slice(0, 3));
-        break;
-      default:
-        setFilteredData(data.slice(0, 3));
+    const sortKey = sortKeyMap[selectedLeader.value];
+    if (sortKey) {
+      setFilteredData([...data].sort((a, b) => b[sortKey] - a[sortKey]).slice(0, 3));
+    } else {
+      setFilteredData(data.slice(0, 3));
     }
-  }, [selectedLeader.value]);
+  }, [selectedLeader.value, data]);
+
+  const getValue = (item, selectedLeaderValue) => {
+    const valueMap = {
+      saleDeals: item.saleListingValue,
+      rentalDeals: item.rentListingValue,
+      calls: item.phoneCalls,
+      viewings: item.noOfViewings,
+      salesListing: item.saleListings,
+      rentalListing: item.rentListings,
+    };
+    return valueMap[selectedLeaderValue];
+  };
+
+  const getPercentage = (item, selectedLeaderValue) => {
+    const percentageMap = {
+      saleDeals: item.saleDealsPct,
+      rentalDeals: item.rentDealsPct,
+      calls: item.callsPct,
+      viewings: item.viewingPct,
+      salesListing: item.saleListingsPct,
+      rentalListing: item.rentListingsPct,
+    };
+    return percentageMap[selectedLeaderValue];
+  };
 
   return (
     <>
@@ -78,10 +94,7 @@ const LeaderboradCard = ({ data, selectedLeader }) => {
 
                 <div className="earning">
                   {iconMap[selectedLeader.value]}
-                  {selectedLeader.value == "saleDeals" ? NumberConversion(item.saleListingValue) : (selectedLeader.value == "rentalDeals" ? NumberConversion(item.rentListingValue) :
-                    (selectedLeader.value == "calls" ? item.phoneCalls : (selectedLeader.value == "viewings" ? item.noOfViewings :
-                      (selectedLeader.value == "salesListing" ? item.saleListings : item.rentListings)
-                    )))}
+                  {NumberConversion(getValue(item, selectedLeader.value))}
                 </div>
 
                 <div className="status">{titleMap[selectedLeader.value]}</div>
@@ -112,13 +125,8 @@ const LeaderboradCard = ({ data, selectedLeader }) => {
                     </>
                   )}
                   <div className="flex align-center label-image">
-                    <LiaPercentageSolid
-                      style={{ fontSize: "25px", color: "#1f7bc1" }}
-                    />
-                    {selectedLeader.value == "saleDeals" ? item.saleDealsPct : (selectedLeader.value == "rentalDeals" ? item.rentDealsPct :
-                      (selectedLeader.value == "calls" ? item.callsPct : (selectedLeader.value == "viewings" ? item.viewingPct :
-                        (selectedLeader.value == "salesListing" ? item.saleListingsPct : item.rentListingsPct)
-                      )))}
+                    <LiaPercentageSolid style={{ fontSize: "25px", color: "#1f7bc1" }} />
+                    {getPercentage(item, selectedLeader.value)}
                   </div>
                 </div>
 

@@ -9,12 +9,12 @@ import { BiListUl } from "react-icons/bi";
 
 const LeaderboradCard = ({ totals, commission, closed, percentage, selectedLeader }) => {
   const iconMap = {
-    saleDeals: <CiDollar style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-    rentalDeals: <CiDollar style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-    calls: <MdOutlineCall style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-    viewings: <CiViewBoard style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-    salesListing: <BiListUl style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-    rentalListing: <BiListUl style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
+    saleDeals: <CiDollar />,
+    rentalDeals: <CiDollar />,
+    calls: <MdOutlineCall />,
+    viewings: <CiViewBoard />,
+    salesListing: <BiListUl />,
+    rentalListing: <BiListUl />,
   };
   const titleMap = {
     saleDeals: "Total Deals",
@@ -28,55 +28,31 @@ const LeaderboradCard = ({ totals, commission, closed, percentage, selectedLeade
     selectedLeader.value
   );
   
-  return (
-    <>
-      <div className="card-wrapper card-wrapper-second">
-        <div className="card-items">
-          <div className="cards flex deals-info">
-            <div>
-              <div>{iconMap[selectedLeader.value]}</div>
-            </div>
-            <div className="description">
-              <div className="text-left fs-18">{totals}</div>
-              <div className="status">{titleMap[selectedLeader.value]}</div>
-            </div>
-          </div>
-
-          {isDealsDashboard && (
-            <>
-          <div className="cards flex deals-info">
-            <div>
-              <div><BsCash style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} /></div>
-            </div>
-            <div className="description">
-              <div className="text-left fs-18">{commission}</div>
-              <div className="status">Total Commission</div>
-            </div>
-          </div>
-          <div className="cards flex deals-info">
-            <div>
-              <div><MdLabelOutline style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} /></div>
-            </div>
-            <div className="description">
-              <div className="text-left fs-18">{closed}</div>
-              <div className="status">Total Close</div>
-            </div>
-          </div>
-          </>
-          )}
-
-          <div className="cards flex deals-info">
-            <div>
-              <div><LiaPercentageSolid style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} /></div>
-            </div>
-            <div className="description">
-              <div className="text-left fs-18">{percentage}</div>
-              <div className="status">Total Percentage</div>
-            </div>
-          </div>
-        </div>
+  const renderCard = (icon, value, title) => (
+    <div className="cards flex deals-info">
+      <div>
+        <div style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }}>{icon}</div>
       </div>
-    </>
+      <div className="description">
+        <div className="text-left fs-18">{value}</div>
+        <div className="status">{title}</div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="card-wrapper card-wrapper-second">
+      <div className="card-items">
+        {renderCard(iconMap[selectedLeader.value], totals, titleMap[selectedLeader.value])}
+        {isDealsDashboard &&
+          <>
+            {renderCard(<BsCash />, commission, "Total Commission")}
+            {renderCard(<MdLabelOutline />, closed, "Total Close")}
+          </>
+        }
+        {renderCard(<LiaPercentageSolid />, percentage, "Total Percentage")}
+      </div>
+    </div>
   );
 };
 

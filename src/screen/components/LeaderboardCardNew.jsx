@@ -175,10 +175,6 @@ const LeaderBoardDashboard = () => {
     }
   };
 
-  // useEffect(() => {
-  //   setSampleData(initialSampleData);
-  // }, [selectedLeader]);
-
   const setEnvironment = (APIToken) => {
     if (process.env.NODE_ENV === 'development') {
       setToken('bearer hosLKzrH8zEyEUq9KLgo6DOV-tWq67D5tGedfoQW7zM_dUuNIpuq4fRSp2tbafk2z7UrKzTnfao-XhoKWin6zwz2igXLMTvnW_3nw5jPnT4um3J1_EtNnRhoFIEzlNUAFOn4G_fipnEYMBiYQa0KhfBwmJ1J4UoJdexYT-8qj86p6J79LK3AAoRNIdY2rZbmbPudLxLiCLxO9FCD3VFcWMN0q-wqFuyvqXFz7ONZ2Mk1ok43C1cBHjYa-MBxnQxu4x0L2um6BjIG16GkS1BDJkdvJLi1vfgjA_42bozCh5oPuRraXTbj20AKOqHDT1WWnoZyEYgmt3vl7HsuznIpDpxDXD2k9b-tTCB9hcom1M5F-vhT7Xk2v7MmI01M6rZLykgBY4TjPfzUHuUO6tlzU2_KrrUrVIRC_Y4rvtZeA3qhCgM4d2iZvyC9EzW3DM5nl9TTqWU05BUlvHCoqlFbX2xVHR7mhHhUGq66h4iMV44ke0Zd01T_eiFjOC9C94_CNM5A3HSbhYZirPdzEL2QEvBweZZh3tBzMxD0kFd85gM');
