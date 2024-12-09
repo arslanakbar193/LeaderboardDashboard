@@ -11,31 +11,33 @@ import TotalDashboard from "../components/TotalDashboard";
 import { MdSpaceDashboard } from "react-icons/md";
 import ReportsTable from "./NewReports";
 import AgentReportsTable from "./AgentReport";
-import { NumberConversion } from '../components/common/CommonFunctions';
-
+import { NumberConversion } from "../components/common/CommonFunctions";
+import MonthYearPicker from "./MonthYearPicker";
 import FullscreenToggle from "../components/FullScreen";
 import { HiDocumentReport, HiOutlineDocumentReport } from "react-icons/hi";
 import AgentResponseTable from "./AgentResponseTime";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import MonthYearRangePicker from "./MonthYearPicker";
 
 const LeaderBoardDashboard = () => {
-  const ApiUrl = 'http://localhost:54103';
-  const [selectedLeader, setSelectedLeader] = useState(leaderOptions[0].subOptions[0]);
+  const ApiUrl = "http://localhost:54103";
+  const [selectedLeader, setSelectedLeader] = useState(
+    leaderOptions[0].subOptions[0]
+  );
   const [expandedLeader, setExpandedLeader] = useState(null);
   const [selectedMonths, setSelectedMonths] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedYear, setSelectedYear] = useState([]);
   const [sampleData, setSampleData] = useState([]);
   const [dataTotals, setDataTotals] = useState({});
-  const [token, setToken] = useState('');
+  const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);
-
 
   useEffect(() => {
     const validateEnvironment = () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const u = urlParams.get('u');
-      const g = urlParams.get('g');
+      const u = urlParams.get("u");
+      const g = urlParams.get("g");
 
       if (!u || !g) {
         setLoading(false);
@@ -52,35 +54,30 @@ const LeaderBoardDashboard = () => {
     validateEnvironment();
   }, []);
 
-
   useEffect(() => {
     if (token) {
       console.log("Token received");
       console.log(token);
       getUserData();
-
     }
   }, [token]);
 
   const getUserData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        ApiUrl + '/leaderboard',
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            'Authorization': token
-          }
-        }
-      );
+      const response = await fetch(ApiUrl + "/leaderboard", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
       console.log(response);
       if (response && response.ok) {
         const responseData = await response.json();
         console.log(responseData, "Leaderbord data");
 
-        const transformedData = responseData.data.map(item => {
+        const transformedData = responseData.data.map((item) => {
           const kpi = item.KPI ? JSON.parse(item.KPI) : {};
 
           const saleDeals = parseFloat(kpi.saleDeals ?? 0);
@@ -108,69 +105,110 @@ const LeaderBoardDashboard = () => {
             viewingTarget: viewing,
             saleListingsTarget: saleListings,
             rentListingsTarget: rentListings,
-            saleDealsPct: saleDeals ? ((item.sale_listings_value / saleDeals) * 100).toFixed(2) + '%' : '0.00%',
-            rentDealsPct: rentDeals ? ((item.rent_listings_value / rentDeals) * 100).toFixed(2) + '%' : '0.00%',
-            callsPct: calls ? ((item.phone_calls / calls) * 100).toFixed(2) + '%' : '0.00%',
-            viewingPct: viewing ? ((item.no_of_viewings / viewing) * 100).toFixed(2) + '%' : '0.00%',
-            saleListingsPct: saleListings ? ((item.sale_new_listings / saleListings) * 100).toFixed(2) + '%' : '0.00%',
-            rentListingsPct: rentListings ? ((item.rent_new_listings / rentListings) * 100).toFixed(2) + '%' : '0.00%',
+            saleDealsPct: saleDeals
+              ? ((item.sale_listings_value / saleDeals) * 100).toFixed(2) + "%"
+              : "0.00%",
+            rentDealsPct: rentDeals
+              ? ((item.rent_listings_value / rentDeals) * 100).toFixed(2) + "%"
+              : "0.00%",
+            callsPct: calls
+              ? ((item.phone_calls / calls) * 100).toFixed(2) + "%"
+              : "0.00%",
+            viewingPct: viewing
+              ? ((item.no_of_viewings / viewing) * 100).toFixed(2) + "%"
+              : "0.00%",
+            saleListingsPct: saleListings
+              ? ((item.sale_new_listings / saleListings) * 100).toFixed(2) + "%"
+              : "0.00%",
+            rentListingsPct: rentListings
+              ? ((item.rent_new_listings / rentListings) * 100).toFixed(2) + "%"
+              : "0.00%",
           };
         });
 
-        const totals = transformedData.reduce((acc, item) => {
-          acc.saleListingValue += parseFloat(item.saleListingValue ?? 0);
-          acc.rentListingValue += parseFloat(item.rentListingValue ?? 0);
-          acc.salecommission += parseFloat(item.salecommission ?? 0);
-          acc.rentcommission += parseFloat(item.rentcommission ?? 0);
-          acc.saleListingsclosed += parseFloat(item.saleListingsclosed ?? 0);
-          acc.rentListingsclosed += parseFloat(item.rentListingsclosed ?? 0);
-          acc.phoneCalls += parseFloat(item.phoneCalls ?? 0);
-          acc.noOfViewings += parseFloat(item.noOfViewings ?? 0);
-          acc.saleListings += parseFloat(item.saleListings ?? 0);
-          acc.rentListings += parseFloat(item.rentListings ?? 0);
-          acc.saleDealsTarget += parseFloat(item.saleDealsTarget ?? 0);
-          acc.rentDealsTarget += parseFloat(item.rentDealsTarget ?? 0);
-          acc.callsTarget += parseFloat(item.callsTarget ?? 0);
-          acc.viewingTarget += parseFloat(item.viewingTarget ?? 0);
-          acc.saleListingsTarget += parseFloat(item.saleListingsTarget ?? 0);
-          acc.rentListingsTarget += parseFloat(item.rentListings ?? 0);
-          return acc;
-        }, {
-          saleListingValue: 0,
-          rentListingValue: 0,
-          salecommission: 0,
-          rentcommission: 0,
-          saleListingsclosed: 0,
-          rentListingsclosed: 0,
-          phoneCalls: 0,
-          noOfViewings: 0,
-          saleListings: 0,
-          rentListings: 0,
-          saleDealsTarget: 0,
-          rentDealsTarget: 0,
-          callsTarget: 0,
-          viewingTarget: 0,
-          saleListingsTarget: 0,
-          rentListingsTarget: 0,
-        });
+        const totals = transformedData.reduce(
+          (acc, item) => {
+            acc.saleListingValue += parseFloat(item.saleListingValue ?? 0);
+            acc.rentListingValue += parseFloat(item.rentListingValue ?? 0);
+            acc.salecommission += parseFloat(item.salecommission ?? 0);
+            acc.rentcommission += parseFloat(item.rentcommission ?? 0);
+            acc.saleListingsclosed += parseFloat(item.saleListingsclosed ?? 0);
+            acc.rentListingsclosed += parseFloat(item.rentListingsclosed ?? 0);
+            acc.phoneCalls += parseFloat(item.phoneCalls ?? 0);
+            acc.noOfViewings += parseFloat(item.noOfViewings ?? 0);
+            acc.saleListings += parseFloat(item.saleListings ?? 0);
+            acc.rentListings += parseFloat(item.rentListings ?? 0);
+            acc.saleDealsTarget += parseFloat(item.saleDealsTarget ?? 0);
+            acc.rentDealsTarget += parseFloat(item.rentDealsTarget ?? 0);
+            acc.callsTarget += parseFloat(item.callsTarget ?? 0);
+            acc.viewingTarget += parseFloat(item.viewingTarget ?? 0);
+            acc.saleListingsTarget += parseFloat(item.saleListingsTarget ?? 0);
+            acc.rentListingsTarget += parseFloat(item.rentListings ?? 0);
+            return acc;
+          },
+          {
+            saleListingValue: 0,
+            rentListingValue: 0,
+            salecommission: 0,
+            rentcommission: 0,
+            saleListingsclosed: 0,
+            rentListingsclosed: 0,
+            phoneCalls: 0,
+            noOfViewings: 0,
+            saleListings: 0,
+            rentListings: 0,
+            saleDealsTarget: 0,
+            rentDealsTarget: 0,
+            callsTarget: 0,
+            viewingTarget: 0,
+            saleListingsTarget: 0,
+            rentListingsTarget: 0,
+          }
+        );
 
         const percentageTotals = {
-          saleDealsPct: totals.saleDealsTarget ? ((totals.saleListingValue / totals.saleDealsTarget) * 100).toFixed(2) + '%' : '0.00%',
-          rentDealsPct: totals.rentDealsTarget ? ((totals.rentListingValue / totals.rentDealsTarget) * 100).toFixed(2) + '%' : '0.00%',
-          callsPct: totals.callsTarget ? ((totals.phoneCalls / totals.callsTarget) * 100).toFixed(2) + '%' : '0.00%',
-          viewingPct: totals.viewingTarget ? ((totals.noOfViewings / totals.viewingTarget) * 100).toFixed(2) + '%' : '0.00%',
-          saleListingsPct: totals.saleListingsTarget ? ((totals.saleListings / totals.saleListingsTarget) * 100).toFixed(2) + '%' : '0.00%',
-          rentListingsPct: totals.rentListingsTarget ? ((totals.rentListings / totals.rentListingsTarget) * 100).toFixed(2) + '%' : '0.00%',
+          saleDealsPct: totals.saleDealsTarget
+            ? (
+                (totals.saleListingValue / totals.saleDealsTarget) *
+                100
+              ).toFixed(2) + "%"
+            : "0.00%",
+          rentDealsPct: totals.rentDealsTarget
+            ? (
+                (totals.rentListingValue / totals.rentDealsTarget) *
+                100
+              ).toFixed(2) + "%"
+            : "0.00%",
+          callsPct: totals.callsTarget
+            ? ((totals.phoneCalls / totals.callsTarget) * 100).toFixed(2) + "%"
+            : "0.00%",
+          viewingPct: totals.viewingTarget
+            ? ((totals.noOfViewings / totals.viewingTarget) * 100).toFixed(2) +
+              "%"
+            : "0.00%",
+          saleListingsPct: totals.saleListingsTarget
+            ? ((totals.saleListings / totals.saleListingsTarget) * 100).toFixed(
+                2
+              ) + "%"
+            : "0.00%",
+          rentListingsPct: totals.rentListingsTarget
+            ? ((totals.rentListings / totals.rentListingsTarget) * 100).toFixed(
+                2
+              ) + "%"
+            : "0.00%",
         };
         setDataTotals({ ...totals, ...percentageTotals });
-        console.log('Totals:', totals);
-        console.log('Percentage Totals:', percentageTotals);
-        console.log('data totals:', { ...totals, ...percentageTotals });
+        console.log("Totals:", totals);
+        console.log("Percentage Totals:", percentageTotals);
+        console.log("data totals:", { ...totals, ...percentageTotals });
 
         setSampleData(transformedData);
-
       } else {
-        console.error("Failed to fetch data:", response.status, response.statusText);
+        console.error(
+          "Failed to fetch data:",
+          response.status,
+          response.statusText
+        );
       }
     } catch (error) {
       console.log(error);
@@ -180,10 +218,11 @@ const LeaderBoardDashboard = () => {
   };
 
   const setEnvironment = (APIToken) => {
-    if (process.env.NODE_ENV === 'development') {
-      setToken('bearer hosLKzrH8zEyEUq9KLgo6DOV-tWq67D5tGedfoQW7zM_dUuNIpuq4fRSp2tbafk2z7UrKzTnfao-XhoKWin6zwz2igXLMTvnW_3nw5jPnT4um3J1_EtNnRhoFIEzlNUAFOn4G_fipnEYMBiYQa0KhfBwmJ1J4UoJdexYT-8qj86p6J79LK3AAoRNIdY2rZbmbPudLxLiCLxO9FCD3VFcWMN0q-wqFuyvqXFz7ONZ2Mk1ok43C1cBHjYa-MBxnQxu4x0L2um6BjIG16GkS1BDJkdvJLi1vfgjA_42bozCh5oPuRraXTbj20AKOqHDT1WWnoZyEYgmt3vl7HsuznIpDpxDXD2k9b-tTCB9hcom1M5F-vhT7Xk2v7MmI01M6rZLykgBY4TjPfzUHuUO6tlzU2_KrrUrVIRC_Y4rvtZeA3qhCgM4d2iZvyC9EzW3DM5nl9TTqWU05BUlvHCoqlFbX2xVHR7mhHhUGq66h4iMV44ke0Zd01T_eiFjOC9C94_CNM5A3HSbhYZirPdzEL2QEvBweZZh3tBzMxD0kFd85gM');
-    }
-    else {
+    if (process.env.NODE_ENV === "development") {
+      setToken(
+        "bearer hosLKzrH8zEyEUq9KLgo6DOV-tWq67D5tGedfoQW7zM_dUuNIpuq4fRSp2tbafk2z7UrKzTnfao-XhoKWin6zwz2igXLMTvnW_3nw5jPnT4um3J1_EtNnRhoFIEzlNUAFOn4G_fipnEYMBiYQa0KhfBwmJ1J4UoJdexYT-8qj86p6J79LK3AAoRNIdY2rZbmbPudLxLiCLxO9FCD3VFcWMN0q-wqFuyvqXFz7ONZ2Mk1ok43C1cBHjYa-MBxnQxu4x0L2um6BjIG16GkS1BDJkdvJLi1vfgjA_42bozCh5oPuRraXTbj20AKOqHDT1WWnoZyEYgmt3vl7HsuznIpDpxDXD2k9b-tTCB9hcom1M5F-vhT7Xk2v7MmI01M6rZLykgBY4TjPfzUHuUO6tlzU2_KrrUrVIRC_Y4rvtZeA3qhCgM4d2iZvyC9EzW3DM5nl9TTqWU05BUlvHCoqlFbX2xVHR7mhHhUGq66h4iMV44ke0Zd01T_eiFjOC9C94_CNM5A3HSbhYZirPdzEL2QEvBweZZh3tBzMxD0kFd85gM"
+      );
+    } else {
       setToken(`Bearer ${JSON.parse(localStorage.jStorage)[APIToken]}`);
     }
   };
@@ -209,7 +248,6 @@ const LeaderBoardDashboard = () => {
       onSelectedChange([...selected, option]);
     }
   };
-
 
   return (
     <>
@@ -316,8 +354,10 @@ const LeaderBoardDashboard = () => {
           <div className="right-sideContent col-9">
             <div className="topbar">
               <div className="top-right-select">
+               
                 <FullscreenToggle />
-                <Dropdown
+                <MonthYearRangePicker />
+                {/* <Dropdown
                   label="Select Month"
                   options={everymonthOptions}
                   selected={selectedMonths}
@@ -325,20 +365,12 @@ const LeaderBoardDashboard = () => {
                   multiSelect={true} // Pass multiSelect prop
                 />
                 <Dropdown
-      label="Select Year"
-      options={everyyearOptions}
-      selected={selectedYear}
-      onSelectedChange={setSelectedYear}
-      multiSelect={true} // Enable multi-selection for years
-    />
-                {/* <p>
-        Selected Months:{" "}
-        {selectedMonths.length > 0
-          ? selectedMonths.map((month) => month.label).join(", ")
-          : "None"}
-      </p> */}
-
-                {/* <h3>Everyone Options</h3> */}
+                  label="Select Year"
+                  options={everyyearOptions}
+                  selected={selectedYear}
+                  onSelectedChange={setSelectedYear}
+                  multiSelect={true} // Enable multi-selection for years
+                /> */}
                 <Dropdown
                   label="Select Option"
                   options={everyoneOptions}
@@ -346,7 +378,6 @@ const LeaderBoardDashboard = () => {
                   onSelectedChange={setSelectedOption}
                 />
                 {/* <p>Selected Option: {selectedOption?.label || "None"}</p> */}
-
               </div>
             </div>
 
@@ -362,19 +393,51 @@ const LeaderBoardDashboard = () => {
               <div>Loading...</div>
             ) : (
               <>
-                <LeaderbordCard data={sampleData} selectedLeader={selectedLeader} />
+                <LeaderbordCard
+                  data={sampleData}
+                  selectedLeader={selectedLeader}
+                />
                 <SecondLeaderboardCard
-                  totals={selectedLeader.value == "saleDeals" ? NumberConversion(dataTotals.saleListingValue) : (selectedLeader.value == "rentalDeals" ? NumberConversion(dataTotals.rentListingValue) :
-                    (selectedLeader.value == "calls" ? dataTotals.phoneCalls : (selectedLeader.value == "viewings" ? dataTotals.noOfViewings :
-                      (selectedLeader.value == "salesListing" ? dataTotals.saleListings : dataTotals.rentListings)
-                    )))}
-                  commission={selectedLeader.value == "saleDeals" ? NumberConversion(dataTotals.salecommission) : (selectedLeader.value == "rentalDeals" ? 
-                    NumberConversion(dataTotals.rentcommission) : 0)}
-                  closed={selectedLeader.value == "saleDeals" ? dataTotals.saleListingsclosed : (selectedLeader.value == "rentalDeals" ? dataTotals.rentListingsclosed : 0)}
-                  percentage={selectedLeader.value == "saleDeals" ? dataTotals.saleDealsPct : (selectedLeader.value == "rentalDeals" ? dataTotals.rentDealsPct :
-                    (selectedLeader.value == "calls" ? dataTotals.callsPct : (selectedLeader.value == "viewings" ? dataTotals.viewingPct :
-                      (selectedLeader.value == "salesListing" ? dataTotals.saleListingsPct : dataTotals.rentListingsPct)
-                    )))}
+                  totals={
+                    selectedLeader.value == "saleDeals"
+                      ? NumberConversion(dataTotals.saleListingValue)
+                      : selectedLeader.value == "rentalDeals"
+                      ? NumberConversion(dataTotals.rentListingValue)
+                      : selectedLeader.value == "calls"
+                      ? dataTotals.phoneCalls
+                      : selectedLeader.value == "viewings"
+                      ? dataTotals.noOfViewings
+                      : selectedLeader.value == "salesListing"
+                      ? dataTotals.saleListings
+                      : dataTotals.rentListings
+                  }
+                  commission={
+                    selectedLeader.value == "saleDeals"
+                      ? NumberConversion(dataTotals.salecommission)
+                      : selectedLeader.value == "rentalDeals"
+                      ? NumberConversion(dataTotals.rentcommission)
+                      : 0
+                  }
+                  closed={
+                    selectedLeader.value == "saleDeals"
+                      ? dataTotals.saleListingsclosed
+                      : selectedLeader.value == "rentalDeals"
+                      ? dataTotals.rentListingsclosed
+                      : 0
+                  }
+                  percentage={
+                    selectedLeader.value == "saleDeals"
+                      ? dataTotals.saleDealsPct
+                      : selectedLeader.value == "rentalDeals"
+                      ? dataTotals.rentDealsPct
+                      : selectedLeader.value == "calls"
+                      ? dataTotals.callsPct
+                      : selectedLeader.value == "viewings"
+                      ? dataTotals.viewingPct
+                      : selectedLeader.value == "salesListing"
+                      ? dataTotals.saleListingsPct
+                      : dataTotals.rentListingsPct
+                  }
                   selectedLeader={selectedLeader}
                 />
                 <ThirdLeaderboardCard
@@ -401,7 +464,6 @@ LeaderBoardDashboard.propTypes = {
   }).isRequired,
 };
 export default LeaderBoardDashboard;
-
 
 const initialSampleData = [
   {
@@ -478,7 +540,8 @@ const initialSampleData = [
     viewingPct: "1220%",
     saleListingsPct: "620%",
     rentListingsPct: "120%",
-  }, {
+  },
+  {
     name: "Emily",
     saleListingValue: "34320000",
     rentListingValue: "350020432",
@@ -554,50 +617,83 @@ const initialSampleData = [
     rentListingsPct: "12%",
   },
 ];
-const sampleDataTotals = initialSampleData.reduce((acc, item) => {
-  acc.saleListingValue += parseFloat(item.saleListingValue ?? 0);
-  acc.rentListingValue += parseFloat(item.rentListingValue ?? 0);
-  acc.salecommission += parseFloat(item.salecommission ?? 0);
-  acc.rentcommission += parseFloat(item.rentcommission ?? 0);
-  acc.saleListingsclosed += parseFloat(item.saleListingsclosed ?? 0);
-  acc.rentListingsclosed += parseFloat(item.rentListingsclosed ?? 0);
-  acc.phoneCalls += parseFloat(item.phoneCalls ?? 0);
-  acc.noOfViewings += parseFloat(item.noOfViewings ?? 0);
-  acc.saleListings += parseFloat(item.saleListings ?? 0);
-  acc.rentListings += parseFloat(item.rentListings ?? 0);
-  acc.saleDealsTarget += parseFloat(item.saleDealsTarget ?? 0);
-  acc.rentDealsTarget += parseFloat(item.rentDealsTarget ?? 0);
-  acc.callsTarget += parseFloat(item.callsTarget ?? 0);
-  acc.viewingTarget += parseFloat(item.viewingTarget ?? 0);
-  acc.saleListingsTarget += parseFloat(item.saleListingsTarget ?? 0);
-  acc.rentListingsTarget += parseFloat(item.rentListings ?? 0);
-  return acc;
-}, {
-  saleListingValue: 0,
-  rentListingValue: 0,
-  salecommission: 0,
-  rentcommission: 0,
-  saleListingsclosed: 0,
-  rentListingsclosed: 0,
-  phoneCalls: 0,
-  noOfViewings: 0,
-  saleListings: 0,
-  rentListings: 0,
-  saleDealsTarget: 0,
-  rentDealsTarget: 0,
-  callsTarget: 0,
-  viewingTarget: 0,
-  saleListingsTarget: 0,
-  rentListingsTarget: 0,
-});
+const sampleDataTotals = initialSampleData.reduce(
+  (acc, item) => {
+    acc.saleListingValue += parseFloat(item.saleListingValue ?? 0);
+    acc.rentListingValue += parseFloat(item.rentListingValue ?? 0);
+    acc.salecommission += parseFloat(item.salecommission ?? 0);
+    acc.rentcommission += parseFloat(item.rentcommission ?? 0);
+    acc.saleListingsclosed += parseFloat(item.saleListingsclosed ?? 0);
+    acc.rentListingsclosed += parseFloat(item.rentListingsclosed ?? 0);
+    acc.phoneCalls += parseFloat(item.phoneCalls ?? 0);
+    acc.noOfViewings += parseFloat(item.noOfViewings ?? 0);
+    acc.saleListings += parseFloat(item.saleListings ?? 0);
+    acc.rentListings += parseFloat(item.rentListings ?? 0);
+    acc.saleDealsTarget += parseFloat(item.saleDealsTarget ?? 0);
+    acc.rentDealsTarget += parseFloat(item.rentDealsTarget ?? 0);
+    acc.callsTarget += parseFloat(item.callsTarget ?? 0);
+    acc.viewingTarget += parseFloat(item.viewingTarget ?? 0);
+    acc.saleListingsTarget += parseFloat(item.saleListingsTarget ?? 0);
+    acc.rentListingsTarget += parseFloat(item.rentListings ?? 0);
+    return acc;
+  },
+  {
+    saleListingValue: 0,
+    rentListingValue: 0,
+    salecommission: 0,
+    rentcommission: 0,
+    saleListingsclosed: 0,
+    rentListingsclosed: 0,
+    phoneCalls: 0,
+    noOfViewings: 0,
+    saleListings: 0,
+    rentListings: 0,
+    saleDealsTarget: 0,
+    rentDealsTarget: 0,
+    callsTarget: 0,
+    viewingTarget: 0,
+    saleListingsTarget: 0,
+    rentListingsTarget: 0,
+  }
+);
 
 const sampleDataPercentageTotals = {
-  saleDealsPct: sampleDataTotals.saleDealsTarget ? ((sampleDataTotals.saleListingValue / sampleDataTotals.saleDealsTarget) * 100).toFixed(2) + '%' : '0.00%',
-  rentDealsPct: sampleDataTotals.rentDealsTarget ? ((sampleDataTotals.rentListingValue / sampleDataTotals.rentDealsTarget) * 100).toFixed(2) + '%' : '0.00%',
-  callsPct: sampleDataTotals.callsTarget ? ((sampleDataTotals.phoneCalls / sampleDataTotals.callsTarget) * 100).toFixed(2) + '%' : '0.00%',
-  viewingPct: sampleDataTotals.viewingTarget ? ((sampleDataTotals.noOfViewings / sampleDataTotals.viewingTarget) * 100).toFixed(2) + '%' : '0.00%',
-  saleListingsPct: sampleDataTotals.saleListingsTarget ? ((sampleDataTotals.saleListings / sampleDataTotals.saleListingsTarget) * 100).toFixed(2) + '%' : '0.00%',
-  rentListingsPct: sampleDataTotals.rentListingsTarget ? ((sampleDataTotals.rentListings / sampleDataTotals.rentListingsTarget) * 100).toFixed(2) + '%' : '0.00%',
+  saleDealsPct: sampleDataTotals.saleDealsTarget
+    ? (
+        (sampleDataTotals.saleListingValue / sampleDataTotals.saleDealsTarget) *
+        100
+      ).toFixed(2) + "%"
+    : "0.00%",
+  rentDealsPct: sampleDataTotals.rentDealsTarget
+    ? (
+        (sampleDataTotals.rentListingValue / sampleDataTotals.rentDealsTarget) *
+        100
+      ).toFixed(2) + "%"
+    : "0.00%",
+  callsPct: sampleDataTotals.callsTarget
+    ? (
+        (sampleDataTotals.phoneCalls / sampleDataTotals.callsTarget) *
+        100
+      ).toFixed(2) + "%"
+    : "0.00%",
+  viewingPct: sampleDataTotals.viewingTarget
+    ? (
+        (sampleDataTotals.noOfViewings / sampleDataTotals.viewingTarget) *
+        100
+      ).toFixed(2) + "%"
+    : "0.00%",
+  saleListingsPct: sampleDataTotals.saleListingsTarget
+    ? (
+        (sampleDataTotals.saleListings / sampleDataTotals.saleListingsTarget) *
+        100
+      ).toFixed(2) + "%"
+    : "0.00%",
+  rentListingsPct: sampleDataTotals.rentListingsTarget
+    ? (
+        (sampleDataTotals.rentListings / sampleDataTotals.rentListingsTarget) *
+        100
+      ).toFixed(2) + "%"
+    : "0.00%",
 };
 
 const leaderOptions = [
@@ -628,6 +724,11 @@ const leaderOptions = [
       { label: "Sales Listing", value: "salesListing" },
       { label: "Rental Listing", value: "rentalListing" },
     ],
+  },
+  {
+    label: "Total Dashboards",
+    value: "leaders5",
+    icon: <MdSpaceDashboard />,
   },
   {
     label: "Lead Source Report",
