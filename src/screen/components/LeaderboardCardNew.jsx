@@ -11,8 +11,8 @@ import TotalDashboard from "../components/TotalDashboard";
 import { MdSpaceDashboard } from "react-icons/md";
 import ReportsTable from "./NewReports";
 import AgentReportsTable from "./AgentReport";
-import { NumberConversion } from "../components/common/CommonFunctions";
-import MonthYearPicker from "./MonthYearPicker";
+import { NumberConversion, fetchWithTokenRetry } from '../components/common/CommonFunctions';
+
 import FullscreenToggle from "../components/FullScreen";
 import { HiDocumentReport, HiOutlineDocumentReport } from "react-icons/hi";
 import AgentResponseTable from "./AgentResponseTime";
@@ -34,30 +34,11 @@ const LeaderBoardDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const validateEnvironment = () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const u = urlParams.get("u");
-      const g = urlParams.get("g");
-
-      if (!u || !g) {
-        setLoading(false);
-        setSampleData(initialSampleData);
-        setDataTotals({ ...sampleDataTotals, ...sampleDataPercentageTotals });
-
-        // window.open("about:blank", "_self");
-        // window.close();
-      } else {
-        setEnvironment(`APITOKEN:U${u}G${g}`);
-      }
-    };
-
-    validateEnvironment();
+    setEnvironment();
   }, []);
 
   useEffect(() => {
     if (token) {
-      console.log("Token received");
-      console.log(token);
       getUserData();
     }
   }, [token]);
@@ -65,19 +46,19 @@ const LeaderBoardDashboard = () => {
   const getUserData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(ApiUrl + "/leaderboard", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-        },
-      });
-      console.log(response);
+      const response = await fetchWithTokenRetry(
+        ApiUrl + '/leaderboard/' + selectedLeader.value,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': token
+          }
+        }
+      );
       if (response && response.ok) {
         const responseData = await response.json();
-        console.log(responseData, "Leaderbord data");
-
-        const transformedData = responseData.data.map((item) => {
+        const transformedData = JSON.parse(responseData).data.map(item => {
           const kpi = item.KPI ? JSON.parse(item.KPI) : {};
 
           const saleDeals = parseFloat(kpi.saleDeals ?? 0);
@@ -212,18 +193,20 @@ const LeaderBoardDashboard = () => {
       }
     } catch (error) {
       console.log(error);
+      setLoading(false);
+      setSampleData(initialSampleData);
+      setDataTotals({ ...sampleDataTotals, ...sampleDataPercentageTotals });
     } finally {
       setLoading(false);
     }
   };
 
-  const setEnvironment = (APIToken) => {
-    if (process.env.NODE_ENV === "development") {
-      setToken(
-        "bearer hosLKzrH8zEyEUq9KLgo6DOV-tWq67D5tGedfoQW7zM_dUuNIpuq4fRSp2tbafk2z7UrKzTnfao-XhoKWin6zwz2igXLMTvnW_3nw5jPnT4um3J1_EtNnRhoFIEzlNUAFOn4G_fipnEYMBiYQa0KhfBwmJ1J4UoJdexYT-8qj86p6J79LK3AAoRNIdY2rZbmbPudLxLiCLxO9FCD3VFcWMN0q-wqFuyvqXFz7ONZ2Mk1ok43C1cBHjYa-MBxnQxu4x0L2um6BjIG16GkS1BDJkdvJLi1vfgjA_42bozCh5oPuRraXTbj20AKOqHDT1WWnoZyEYgmt3vl7HsuznIpDpxDXD2k9b-tTCB9hcom1M5F-vhT7Xk2v7MmI01M6rZLykgBY4TjPfzUHuUO6tlzU2_KrrUrVIRC_Y4rvtZeA3qhCgM4d2iZvyC9EzW3DM5nl9TTqWU05BUlvHCoqlFbX2xVHR7mhHhUGq66h4iMV44ke0Zd01T_eiFjOC9C94_CNM5A3HSbhYZirPdzEL2QEvBweZZh3tBzMxD0kFd85gM"
-      );
-    } else {
-      setToken(`Bearer ${JSON.parse(localStorage.jStorage)[APIToken]}`);
+  const setEnvironment = () => {
+    if (process.env.NODE_ENV === 'development') {
+      setToken('bearer hosLKzrH8zEyEUq9KLgo6DOV-tWq67D5tGedfoQW7zM_dUuNIpuq4fRSp2tbafk2z7UrKzTnfao-XhoKWin6zwz2igXLMTvnW_3nw5jPnT4um3J1_EtNnRhoFIEzlNUAFOn4G_fipnEYMBiYQa0KhfBwmJ1J4UoJdexYT-8qj86p6J79LK3AAoRNIdY2rZbmbPudLxLiCLxO9FCD3VFcWMN0q-wqFuyvqXFz7ONZ2Mk1ok43C1cBHjYa-MBxnQxu4x0L2um6BjIG16GkS1BDJkdvJLi1vfgjA_42bozCh5oPuRraXTbj20AKOqHDT1WWnoZyEYgmt3vl7HsuznIpDpxDXD2k9b-tTCB9hcom1M5F-vhT7Xk2v7MmI01M6rZLykgBY4TjPfzUHuUO6tlzU2_KrrUrVIRC_Y4rvtZeA3qhCgM4d2iZvyC9EzW3DM5nl9TTqWU05BUlvHCoqlFbX2xVHR7mhHhUGq66h4iMV44ke0Zd01T_eiFjOC9C94_CNM5A3HSbhYZirPdzEL2QEvBweZZh3tBzMxD0kFd85gM');
+    }
+    else {
+      setToken(`Bearer ${JSON.parse(localStorage.jStorage)[opener.parent.application.context.get_apiTokenKey()]}`);
     }
   };
 
@@ -235,6 +218,10 @@ const LeaderBoardDashboard = () => {
       setExpandedLeader(null); // Close other sub-options
     }
   };
+
+  useEffect(() => {
+    getUserData();
+  }, [selectedLeader]);
 
   const handleSelectionChange = (newSelection) => {
     setSelectedLeader(newSelection);
@@ -248,6 +235,11 @@ const LeaderBoardDashboard = () => {
       onSelectedChange([...selected, option]);
     }
   };
+
+  useEffect(() => {
+    // console.log(selectedMonths);
+    // console.log(selectedYear);
+  }, [selectedMonths, selectedYear]);
 
   return (
     <>
@@ -398,46 +390,17 @@ const LeaderBoardDashboard = () => {
                   selectedLeader={selectedLeader}
                 />
                 <SecondLeaderboardCard
-                  totals={
-                    selectedLeader.value == "saleDeals"
-                      ? NumberConversion(dataTotals.saleListingValue)
-                      : selectedLeader.value == "rentalDeals"
-                      ? NumberConversion(dataTotals.rentListingValue)
-                      : selectedLeader.value == "calls"
-                      ? dataTotals.phoneCalls
-                      : selectedLeader.value == "viewings"
-                      ? dataTotals.noOfViewings
-                      : selectedLeader.value == "salesListing"
-                      ? dataTotals.saleListings
-                      : dataTotals.rentListings
-                  }
-                  commission={
-                    selectedLeader.value == "saleDeals"
-                      ? NumberConversion(dataTotals.salecommission)
-                      : selectedLeader.value == "rentalDeals"
-                      ? NumberConversion(dataTotals.rentcommission)
-                      : 0
-                  }
-                  closed={
-                    selectedLeader.value == "saleDeals"
-                      ? dataTotals.saleListingsclosed
-                      : selectedLeader.value == "rentalDeals"
-                      ? dataTotals.rentListingsclosed
-                      : 0
-                  }
-                  percentage={
-                    selectedLeader.value == "saleDeals"
-                      ? dataTotals.saleDealsPct
-                      : selectedLeader.value == "rentalDeals"
-                      ? dataTotals.rentDealsPct
-                      : selectedLeader.value == "calls"
-                      ? dataTotals.callsPct
-                      : selectedLeader.value == "viewings"
-                      ? dataTotals.viewingPct
-                      : selectedLeader.value == "salesListing"
-                      ? dataTotals.saleListingsPct
-                      : dataTotals.rentListingsPct
-                  }
+                  totals={selectedLeader.value == "saleDeals" ? NumberConversion(dataTotals.saleListingValue) : (selectedLeader.value == "rentalDeals" ? NumberConversion(dataTotals.rentListingValue) :
+                    (selectedLeader.value == "calls" ? dataTotals.phoneCalls : (selectedLeader.value == "viewings" ? dataTotals.noOfViewings :
+                      (selectedLeader.value == "salesListing" ? dataTotals.saleListings : dataTotals.rentListings)
+                    )))}
+                  commission={selectedLeader.value == "saleDeals" ? NumberConversion(dataTotals.salecommission) : (selectedLeader.value == "rentalDeals" ?
+                    NumberConversion(dataTotals.rentcommission) : 0)}
+                  closed={selectedLeader.value == "saleDeals" ? dataTotals.saleListingsclosed : (selectedLeader.value == "rentalDeals" ? dataTotals.rentListingsclosed : 0)}
+                  percentage={selectedLeader.value == "saleDeals" ? dataTotals.saleDealsPct : (selectedLeader.value == "rentalDeals" ? dataTotals.rentDealsPct :
+                    (selectedLeader.value == "calls" ? dataTotals.callsPct : (selectedLeader.value == "viewings" ? dataTotals.viewingPct :
+                      (selectedLeader.value == "salesListing" ? dataTotals.saleListingsPct : dataTotals.rentListingsPct)
+                    )))}
                   selectedLeader={selectedLeader}
                 />
                 <ThirdLeaderboardCard
@@ -776,18 +739,18 @@ const everyoneOptions = [
 ];
 const everymonthOptions = [
   // { label: "This month", value: "1" },
-  { label: "December", value: "2" },
-  { label: "January", value: "3" },
-  { label: "Feburary", value: "4" },
-  { label: "March", value: "5" },
-  { label: "April", value: "6" },
-  { label: "May", value: "7" },
-  { label: "June", value: "8" },
-  { label: "July", value: "9" },
-  { label: "August", value: "10" },
-  { label: "September", value: "11" },
-  { label: "October", value: "12" },
-  { label: "November", value: "13" },
+  { label: "January", value: "1" },
+  { label: "Feburary", value: "2" },
+  { label: "March", value: "3" },
+  { label: "April", value: "4" },
+  { label: "May", value: "5" },
+  { label: "June", value: "6" },
+  { label: "July", value: "7" },
+  { label: "August", value: "8" },
+  { label: "September", value: "9" },
+  { label: "October", value: "10" },
+  { label: "November", value: "11" },
+  { label: "December", value: "12" },
 ];
 const everyyearOptions = [
   { label: "2024", value: "1" },
