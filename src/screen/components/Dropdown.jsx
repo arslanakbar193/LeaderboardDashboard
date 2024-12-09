@@ -139,16 +139,17 @@ const Dropdown = ({ label, options, selected, onSelectedChange, multiSelect = fa
         >
           <i className="dropdown icon"></i>
           <div className="text">
-            {multiSelect
-              ? selected.length > 0
-                ? `${selected.length} selected`
-                : "Select Months"
-              : subSelected
-              ? subSelected.label
-              : selected
-              ? selected.label
-              : "Select Members"}
-          </div>
+  {multiSelect
+    ? selected.length > 0
+      ? `${selected.length} selected`
+      : label // Use the label prop for placeholder
+    : subSelected
+    ? subSelected.label
+    : selected
+    ? selected.label
+    : label // Use the label prop for placeholder
+  }
+</div>
           <div className={`menu ${open ? "visible transition" : ""}`}>
             {renderedOptions}
           </div>

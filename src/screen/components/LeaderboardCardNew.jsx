@@ -24,7 +24,7 @@ const LeaderBoardDashboard = () => {
   const [expandedLeader, setExpandedLeader] = useState(null);
   const [selectedMonths, setSelectedMonths] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
-  const [selectedYear, setSelectedYear] = useState(everyyearOptions[0]);
+  const [selectedYear, setSelectedYear] = useState([]);
   const [sampleData, setSampleData] = useState([]);
   const [dataTotals, setDataTotals] = useState({});
   const [token, setToken] = useState('');
@@ -314,11 +314,12 @@ const LeaderBoardDashboard = () => {
                   multiSelect={true} // Pass multiSelect prop
                 />
                 <Dropdown
-                  label=""
-                  options={everyyearOptions}
-                  selected={selectedYear}
-                  onSelectedChange={setSelectedYear}
-                />
+      label="Select Year"
+      options={everyyearOptions}
+      selected={selectedYear}
+      onSelectedChange={setSelectedYear}
+      multiSelect={true} // Enable multi-selection for years
+    />
                 {/* <p>
         Selected Months:{" "}
         {selectedMonths.length > 0
@@ -677,7 +678,6 @@ const everymonthOptions = [
   { label: "December", value: "12" },
 ];
 const everyyearOptions = [
-  { label: "Year", value: "1" },
-  { label: "2024", value: "2" },
-  { label: "2023", value: "3" },
+  { label: "2024", value: "1" },
+  { label: "2023", value: "2" },
 ];
