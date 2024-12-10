@@ -21,17 +21,24 @@ import MonthYearRangePicker from "./MonthYearPicker";
 
 const LeaderBoardDashboard = () => {
   const ApiUrl = "http://localhost:54103";
-  const [selectedLeader, setSelectedLeader] = useState(
-    leaderOptions[0].subOptions[0]
-  );
+  const [selectedLeader, setSelectedLeader] = useState(leaderOptions[0].subOptions[0]);
   const [expandedLeader, setExpandedLeader] = useState(null);
-  const [selectedMonths, setSelectedMonths] = useState([]);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [selectedYear, setSelectedYear] = useState([]);
+  const [selectedOption, setSelectedOption] = useState({ value: 0, label: 'ALL' });
+  const [dropdownOptions, setDropdownOptions] = useState([]);
   const [sampleData, setSampleData] = useState([]);
   const [dataTotals, setDataTotals] = useState({});
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);
+  const [startMonth, setStartMonth] = useState(() => {
+    const currentDate = new Date();
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    return startOfMonth.toISOString();
+  });
+  const [endMonth, setEndMonth] = useState(() => {
+    const currentDate = new Date();
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    return startOfMonth.toISOString();
+  });
 
   useEffect(() => {
     setEnvironment();
@@ -40,14 +47,200 @@ const LeaderBoardDashboard = () => {
   useEffect(() => {
     if (token) {
       getUserData();
+      populateBranches();
     }
   }, [token]);
 
+  useEffect(() => {
+    console.log("trigger getUserData");
+    if (token) {
+      getUserData();
+    }
+  }, [selectedOption, startMonth, endMonth]);
+
   const getUserData = async () => {
-    setLoading(true);
+    if (leaderValueMapping.hasOwnProperty(selectedLeader.value)) {
+      setLoading(true);
+      const leaderValue = leaderValueMapping[selectedLeader.value];
+      try {
+        const options = {
+          filter: {
+            filters: [
+              {
+                operator: "gte",
+                field: "start_date",
+                value: startMonth,
+              },
+              {
+                operator: "lte",
+                field: "end_date",
+                value: endMonth,
+              },
+              {
+                field: "branch_id",
+                value: selectedOption.value,
+              },
+            ],
+          },
+        };
+
+        const response = await fetchWithTokenRetry(
+          ApiUrl + '/leaderboard/' + leaderValue,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              'Authorization': token
+            },
+            body: JSON.stringify(options),
+          }
+        );
+        if (response && response.ok) {
+          const responseData = await response.json();
+          const transformedData = JSON.parse(responseData).data.map(item => {
+            const kpi = item.KPI ? JSON.parse(item.KPI) : {};
+
+            const saleDeals = parseFloat(kpi.saleDeals ?? 0);
+            const rentDeals = parseFloat(kpi.rentDeals ?? 0);
+            const calls = parseFloat(kpi.calls ?? 0);
+            const viewing = parseFloat(kpi.viewing ?? 0);
+            const saleListings = parseFloat(kpi.saleListings ?? 0);
+            const rentListings = parseFloat(kpi.rentListings ?? 0);
+
+            return {
+              name: item.agent_name,
+              saleListingValue: item.sale_listings_value,
+              rentListingValue: item.rent_listings_value,
+              salecommission: item.sale_listings_commission,
+              rentcommission: item.rent_listings_commission,
+              saleListingsclosed: item.sale_listings_sold,
+              rentListingsclosed: item.rent_listings_sold,
+              phoneCalls: item.phone_calls,
+              noOfViewings: item.no_of_viewings,
+              saleListings: item.sale_new_listings,
+              rentListings: item.rent_new_listings,
+              saleDealsTarget: saleDeals,
+              rentDealsTarget: rentDeals,
+              callsTarget: calls,
+              viewingTarget: viewing,
+              saleListingsTarget: saleListings,
+              rentListingsTarget: rentListings,
+              saleDealsPct: saleDeals
+                ? ((item.sale_listings_value / saleDeals) * 100).toFixed(2) + "%"
+                : "0.00%",
+              rentDealsPct: rentDeals
+                ? ((item.rent_listings_value / rentDeals) * 100).toFixed(2) + "%"
+                : "0.00%",
+              callsPct: calls
+                ? ((item.phone_calls / calls) * 100).toFixed(2) + "%"
+                : "0.00%",
+              viewingPct: viewing
+                ? ((item.no_of_viewings / viewing) * 100).toFixed(2) + "%"
+                : "0.00%",
+              saleListingsPct: saleListings
+                ? ((item.sale_new_listings / saleListings) * 100).toFixed(2) + "%"
+                : "0.00%",
+              rentListingsPct: rentListings
+                ? ((item.rent_new_listings / rentListings) * 100).toFixed(2) + "%"
+                : "0.00%",
+            };
+          });
+
+          const totals = transformedData.reduce(
+            (acc, item) => {
+              acc.saleListingValue += parseFloat(item.saleListingValue ?? 0);
+              acc.rentListingValue += parseFloat(item.rentListingValue ?? 0);
+              acc.salecommission += parseFloat(item.salecommission ?? 0);
+              acc.rentcommission += parseFloat(item.rentcommission ?? 0);
+              acc.saleListingsclosed += parseFloat(item.saleListingsclosed ?? 0);
+              acc.rentListingsclosed += parseFloat(item.rentListingsclosed ?? 0);
+              acc.phoneCalls += parseFloat(item.phoneCalls ?? 0);
+              acc.noOfViewings += parseFloat(item.noOfViewings ?? 0);
+              acc.saleListings += parseFloat(item.saleListings ?? 0);
+              acc.rentListings += parseFloat(item.rentListings ?? 0);
+              acc.saleDealsTarget += parseFloat(item.saleDealsTarget ?? 0);
+              acc.rentDealsTarget += parseFloat(item.rentDealsTarget ?? 0);
+              acc.callsTarget += parseFloat(item.callsTarget ?? 0);
+              acc.viewingTarget += parseFloat(item.viewingTarget ?? 0);
+              acc.saleListingsTarget += parseFloat(item.saleListingsTarget ?? 0);
+              acc.rentListingsTarget += parseFloat(item.rentListings ?? 0);
+              return acc;
+            },
+            {
+              saleListingValue: 0,
+              rentListingValue: 0,
+              salecommission: 0,
+              rentcommission: 0,
+              saleListingsclosed: 0,
+              rentListingsclosed: 0,
+              phoneCalls: 0,
+              noOfViewings: 0,
+              saleListings: 0,
+              rentListings: 0,
+              saleDealsTarget: 0,
+              rentDealsTarget: 0,
+              callsTarget: 0,
+              viewingTarget: 0,
+              saleListingsTarget: 0,
+              rentListingsTarget: 0,
+            }
+          );
+
+          const percentageTotals = {
+            saleDealsPct: totals.saleDealsTarget
+              ? (
+                (totals.saleListingValue / totals.saleDealsTarget) *
+                100
+              ).toFixed(2) + "%"
+              : "0.00%",
+            rentDealsPct: totals.rentDealsTarget
+              ? (
+                (totals.rentListingValue / totals.rentDealsTarget) *
+                100
+              ).toFixed(2) + "%"
+              : "0.00%",
+            callsPct: totals.callsTarget
+              ? ((totals.phoneCalls / totals.callsTarget) * 100).toFixed(2) + "%"
+              : "0.00%",
+            viewingPct: totals.viewingTarget
+              ? ((totals.noOfViewings / totals.viewingTarget) * 100).toFixed(2) +
+              "%"
+              : "0.00%",
+            saleListingsPct: totals.saleListingsTarget
+              ? ((totals.saleListings / totals.saleListingsTarget) * 100).toFixed(
+                2
+              ) + "%"
+              : "0.00%",
+            rentListingsPct: totals.rentListingsTarget
+              ? ((totals.rentListings / totals.rentListingsTarget) * 100).toFixed(
+                2
+              ) + "%"
+              : "0.00%",
+          };
+          setDataTotals({ ...totals, ...percentageTotals });
+          console.log("Totals:", totals);
+          console.log("Percentage Totals:", percentageTotals);
+          console.log("data totals:", { ...totals, ...percentageTotals });
+
+          setSampleData(transformedData);
+        } else {
+          console.error("Failed to fetch data:", response.status, response.statusText);
+        }
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+        setSampleData(initialSampleData);
+        setDataTotals({ ...sampleDataTotals, ...sampleDataPercentageTotals });
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const populateBranches = async () => {
     try {
       const response = await fetchWithTokenRetry(
-        ApiUrl + '/leaderboard/' + selectedLeader.value,
+        ApiUrl + '/users/branches',
         {
           method: "GET",
           headers: {
@@ -58,146 +251,17 @@ const LeaderBoardDashboard = () => {
       );
       if (response && response.ok) {
         const responseData = await response.json();
-        const transformedData = JSON.parse(responseData).data.map(item => {
-          const kpi = item.KPI ? JSON.parse(item.KPI) : {};
+        console.log(responseData);
+        const everyoneOptions = [
+          { value: 0, label: "ALL" },
+          ...responseData.map((branch) => ({ value: branch.id, label: branch.name })),
+        ];
 
-          const saleDeals = parseFloat(kpi.saleDeals ?? 0);
-          const rentDeals = parseFloat(kpi.rentDeals ?? 0);
-          const calls = parseFloat(kpi.calls ?? 0);
-          const viewing = parseFloat(kpi.viewing ?? 0);
-          const saleListings = parseFloat(kpi.saleListings ?? 0);
-          const rentListings = parseFloat(kpi.rentListings ?? 0);
-
-          return {
-            name: item.agent_name,
-            saleListingValue: item.sale_listings_value,
-            rentListingValue: item.rent_listings_value,
-            salecommission: item.sale_listings_commission,
-            rentcommission: item.rent_listings_commission,
-            saleListingsclosed: item.sale_listings_sold,
-            rentListingsclosed: item.rent_listings_sold,
-            phoneCalls: item.phone_calls,
-            noOfViewings: item.no_of_viewings,
-            saleListings: item.sale_new_listings,
-            rentListings: item.rent_new_listings,
-            saleDealsTarget: saleDeals,
-            rentDealsTarget: rentDeals,
-            callsTarget: calls,
-            viewingTarget: viewing,
-            saleListingsTarget: saleListings,
-            rentListingsTarget: rentListings,
-            saleDealsPct: saleDeals
-              ? ((item.sale_listings_value / saleDeals) * 100).toFixed(2) + "%"
-              : "0.00%",
-            rentDealsPct: rentDeals
-              ? ((item.rent_listings_value / rentDeals) * 100).toFixed(2) + "%"
-              : "0.00%",
-            callsPct: calls
-              ? ((item.phone_calls / calls) * 100).toFixed(2) + "%"
-              : "0.00%",
-            viewingPct: viewing
-              ? ((item.no_of_viewings / viewing) * 100).toFixed(2) + "%"
-              : "0.00%",
-            saleListingsPct: saleListings
-              ? ((item.sale_new_listings / saleListings) * 100).toFixed(2) + "%"
-              : "0.00%",
-            rentListingsPct: rentListings
-              ? ((item.rent_new_listings / rentListings) * 100).toFixed(2) + "%"
-              : "0.00%",
-          };
-        });
-
-        const totals = transformedData.reduce(
-          (acc, item) => {
-            acc.saleListingValue += parseFloat(item.saleListingValue ?? 0);
-            acc.rentListingValue += parseFloat(item.rentListingValue ?? 0);
-            acc.salecommission += parseFloat(item.salecommission ?? 0);
-            acc.rentcommission += parseFloat(item.rentcommission ?? 0);
-            acc.saleListingsclosed += parseFloat(item.saleListingsclosed ?? 0);
-            acc.rentListingsclosed += parseFloat(item.rentListingsclosed ?? 0);
-            acc.phoneCalls += parseFloat(item.phoneCalls ?? 0);
-            acc.noOfViewings += parseFloat(item.noOfViewings ?? 0);
-            acc.saleListings += parseFloat(item.saleListings ?? 0);
-            acc.rentListings += parseFloat(item.rentListings ?? 0);
-            acc.saleDealsTarget += parseFloat(item.saleDealsTarget ?? 0);
-            acc.rentDealsTarget += parseFloat(item.rentDealsTarget ?? 0);
-            acc.callsTarget += parseFloat(item.callsTarget ?? 0);
-            acc.viewingTarget += parseFloat(item.viewingTarget ?? 0);
-            acc.saleListingsTarget += parseFloat(item.saleListingsTarget ?? 0);
-            acc.rentListingsTarget += parseFloat(item.rentListings ?? 0);
-            return acc;
-          },
-          {
-            saleListingValue: 0,
-            rentListingValue: 0,
-            salecommission: 0,
-            rentcommission: 0,
-            saleListingsclosed: 0,
-            rentListingsclosed: 0,
-            phoneCalls: 0,
-            noOfViewings: 0,
-            saleListings: 0,
-            rentListings: 0,
-            saleDealsTarget: 0,
-            rentDealsTarget: 0,
-            callsTarget: 0,
-            viewingTarget: 0,
-            saleListingsTarget: 0,
-            rentListingsTarget: 0,
-          }
-        );
-
-        const percentageTotals = {
-          saleDealsPct: totals.saleDealsTarget
-            ? (
-                (totals.saleListingValue / totals.saleDealsTarget) *
-                100
-              ).toFixed(2) + "%"
-            : "0.00%",
-          rentDealsPct: totals.rentDealsTarget
-            ? (
-                (totals.rentListingValue / totals.rentDealsTarget) *
-                100
-              ).toFixed(2) + "%"
-            : "0.00%",
-          callsPct: totals.callsTarget
-            ? ((totals.phoneCalls / totals.callsTarget) * 100).toFixed(2) + "%"
-            : "0.00%",
-          viewingPct: totals.viewingTarget
-            ? ((totals.noOfViewings / totals.viewingTarget) * 100).toFixed(2) +
-              "%"
-            : "0.00%",
-          saleListingsPct: totals.saleListingsTarget
-            ? ((totals.saleListings / totals.saleListingsTarget) * 100).toFixed(
-                2
-              ) + "%"
-            : "0.00%",
-          rentListingsPct: totals.rentListingsTarget
-            ? ((totals.rentListings / totals.rentListingsTarget) * 100).toFixed(
-                2
-              ) + "%"
-            : "0.00%",
-        };
-        setDataTotals({ ...totals, ...percentageTotals });
-        console.log("Totals:", totals);
-        console.log("Percentage Totals:", percentageTotals);
-        console.log("data totals:", { ...totals, ...percentageTotals });
-
-        setSampleData(transformedData);
-      } else {
-        console.error(
-          "Failed to fetch data:",
-          response.status,
-          response.statusText
-        );
+        setDropdownOptions(everyoneOptions);
       }
     } catch (error) {
       console.log(error);
-      setLoading(false);
-      setSampleData(initialSampleData);
-      setDataTotals({ ...sampleDataTotals, ...sampleDataPercentageTotals });
-    } finally {
-      setLoading(false);
+      setDropdownOptions(everyoneOptions);
     }
   };
 
@@ -235,11 +299,6 @@ const LeaderBoardDashboard = () => {
       onSelectedChange([...selected, option]);
     }
   };
-
-  useEffect(() => {
-    // console.log(selectedMonths);
-    // console.log(selectedYear);
-  }, [selectedMonths, selectedYear]);
 
   return (
     <>
@@ -346,30 +405,20 @@ const LeaderBoardDashboard = () => {
           <div className="right-sideContent col-9">
             <div className="topbar">
               <div className="top-right-select">
-               
+
                 <FullscreenToggle />
-                <MonthYearRangePicker />
-                {/* <Dropdown
-                  label="Select Month"
-                  options={everymonthOptions}
-                  selected={selectedMonths}
-                  onSelectedChange={setSelectedMonths}
-                  multiSelect={true} // Pass multiSelect prop
+                <MonthYearRangePicker
+                  startMonth={startMonth}
+                  setStartMonth={setStartMonth}
+                  endMonth={endMonth}
+                  setEndMonth={setEndMonth}
                 />
                 <Dropdown
-                  label="Select Year"
-                  options={everyyearOptions}
-                  selected={selectedYear}
-                  onSelectedChange={setSelectedYear}
-                  multiSelect={true} // Enable multi-selection for years
-                /> */}
-                <Dropdown
                   label="Select Option"
-                  options={everyoneOptions}
+                  options={dropdownOptions}
                   selected={selectedOption}
                   onSelectedChange={setSelectedOption}
                 />
-                {/* <p>Selected Option: {selectedOption?.label || "None"}</p> */}
               </div>
             </div>
 
@@ -623,39 +672,39 @@ const sampleDataTotals = initialSampleData.reduce(
 const sampleDataPercentageTotals = {
   saleDealsPct: sampleDataTotals.saleDealsTarget
     ? (
-        (sampleDataTotals.saleListingValue / sampleDataTotals.saleDealsTarget) *
-        100
-      ).toFixed(2) + "%"
+      (sampleDataTotals.saleListingValue / sampleDataTotals.saleDealsTarget) *
+      100
+    ).toFixed(2) + "%"
     : "0.00%",
   rentDealsPct: sampleDataTotals.rentDealsTarget
     ? (
-        (sampleDataTotals.rentListingValue / sampleDataTotals.rentDealsTarget) *
-        100
-      ).toFixed(2) + "%"
+      (sampleDataTotals.rentListingValue / sampleDataTotals.rentDealsTarget) *
+      100
+    ).toFixed(2) + "%"
     : "0.00%",
   callsPct: sampleDataTotals.callsTarget
     ? (
-        (sampleDataTotals.phoneCalls / sampleDataTotals.callsTarget) *
-        100
-      ).toFixed(2) + "%"
+      (sampleDataTotals.phoneCalls / sampleDataTotals.callsTarget) *
+      100
+    ).toFixed(2) + "%"
     : "0.00%",
   viewingPct: sampleDataTotals.viewingTarget
     ? (
-        (sampleDataTotals.noOfViewings / sampleDataTotals.viewingTarget) *
-        100
-      ).toFixed(2) + "%"
+      (sampleDataTotals.noOfViewings / sampleDataTotals.viewingTarget) *
+      100
+    ).toFixed(2) + "%"
     : "0.00%",
   saleListingsPct: sampleDataTotals.saleListingsTarget
     ? (
-        (sampleDataTotals.saleListings / sampleDataTotals.saleListingsTarget) *
-        100
-      ).toFixed(2) + "%"
+      (sampleDataTotals.saleListings / sampleDataTotals.saleListingsTarget) *
+      100
+    ).toFixed(2) + "%"
     : "0.00%",
   rentListingsPct: sampleDataTotals.rentListingsTarget
     ? (
-        (sampleDataTotals.rentListings / sampleDataTotals.rentListingsTarget) *
-        100
-      ).toFixed(2) + "%"
+      (sampleDataTotals.rentListings / sampleDataTotals.rentListingsTarget) *
+      100
+    ).toFixed(2) + "%"
     : "0.00%",
 };
 
@@ -756,3 +805,12 @@ const everyyearOptions = [
   { label: "2024", value: "1" },
   { label: "2023", value: "2" },
 ];
+
+const leaderValueMapping = {
+  saleDeals: 1,
+  rentalDeals: 2,
+  calls: 3,
+  viewings: 4,
+  salesListing: 5,
+  rentalListing: 6,
+};
