@@ -4,10 +4,12 @@ import { MdOutlineToggleOff, MdOutlineToggleOn } from "react-icons/md";
 const TotalDashboard = ({ data }) => {
   // Toggle state for the columns (totalCalls, totalViewings, totalListings)
   const [toggleStates, setToggleStates] = useState({
-    totalDeals:false,
+    totalSalesDeals:false,
+    totalRentalDeals:false,
     totalCalls: false,
     totalViewings: false,
-    totalListings: false,
+    totalSalesListings: false,
+    totalRentalListings: false,
   });
 
   // Handle toggle for each column in the thead
@@ -41,17 +43,32 @@ const TotalDashboard = ({ data }) => {
         <thead>
           <tr>
             <th>Agent Name</th>
-            <th>Total Deals
+            <th>Total Sales Deals
             <div style={{ position: 'absolute', top: '11px',right:"10px" }}>
-                {toggleStates.totalDeals ? (
+                {toggleStates.totalSalesDeals ? (
                   <MdOutlineToggleOn
                     style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
-                    onClick={() => handleToggle('totalDeals')}
+                    onClick={() => handleToggle('totalSalesDeals')}
                   />
                 ) : (
                   <MdOutlineToggleOff
                     style={{ fontSize: '32px', color: "#000", cursor: 'pointer' }}
-                    onClick={() => handleToggle('totalDeals')}
+                    onClick={() => handleToggle('totalSalesDeals')}
+                  />
+                )}
+              </div>
+            </th>
+            <th>Total Rental Deals
+            <div style={{ position: 'absolute', top: '11px',right:"10px" }}>
+                {toggleStates.totalRentalDeals ? (
+                  <MdOutlineToggleOn
+                    style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
+                    onClick={() => handleToggle('totalRentalDeals')}
+                  />
+                ) : (
+                  <MdOutlineToggleOff
+                    style={{ fontSize: '32px', color: "#000", cursor: 'pointer' }}
+                    onClick={() => handleToggle('totalRentalDeals')}
                   />
                 )}
               </div>
@@ -95,17 +112,33 @@ const TotalDashboard = ({ data }) => {
 
             {/* Total Listings with Toggle */}
             <th>
-              Total Listings
+            Total Sales Listings
               <div style={{ position: 'absolute', top: '11px',right:"10px"  }}>
-                {toggleStates.totalListings ? (
+                {toggleStates.totalSalesListings ? (
                   <MdOutlineToggleOn
                     style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
-                    onClick={() => handleToggle('totalListings')}
+                    onClick={() => handleToggle('totalSalesListings')}
                   />
                 ) : (
                   <MdOutlineToggleOff
                     style={{ fontSize: '32px', color: "#000", cursor: 'pointer' }}
-                    onClick={() => handleToggle('totalListings')}
+                    onClick={() => handleToggle('totalSalesListings')}
+                  />
+                )}
+              </div>
+            </th>
+            <th>
+              Total Rental Listings
+              <div style={{ position: 'absolute', top: '11px',right:"10px"  }}>
+                {toggleStates.totalRentalListings ? (
+                  <MdOutlineToggleOn
+                    style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
+                    onClick={() => handleToggle('totalRentalListings')}
+                  />
+                ) : (
+                  <MdOutlineToggleOff
+                    style={{ fontSize: '32px', color: "#000", cursor: 'pointer' }}
+                    onClick={() => handleToggle('totalRentalListings')}
                   />
                 )}
               </div>
@@ -117,10 +150,13 @@ const TotalDashboard = ({ data }) => {
           {currentItems.map((agent, index) => (
             <tr key={index}>
               <td>{agent.name}</td>
-              <td>{agent.totalDeals}</td>
-              <td>{agent.totalCalls}</td>
+              {/* <td>{agent.totalDeals}</td> */}
+              <td>{agent.totalSalesCalls}</td>
+              <td>{agent.totalRentalCalls}</td>
               <td>{agent.totalViewings}</td>
               <td>{agent.totalListings}</td>
+              <td>{agent.totalSalesListings}</td>
+              <td>{agent.totalRentalListings}</td>
             </tr>
           ))}
         </tbody>
