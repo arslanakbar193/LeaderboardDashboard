@@ -32,12 +32,12 @@ const LeaderBoardDashboard = () => {
   const [startMonth, setStartMonth] = useState(() => {
     const currentDate = new Date();
     const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    return startOfMonth.toISOString();
+    return startOfMonth;
   });
   const [endMonth, setEndMonth] = useState(() => {
     const currentDate = new Date();
-    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    return startOfMonth.toISOString();
+    const startOfNextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    return startOfNextMonth;
   });
 
   useEffect(() => {
@@ -52,11 +52,10 @@ const LeaderBoardDashboard = () => {
   }, [token]);
 
   useEffect(() => {
-    console.log("trigger getUserData");
-    if (token) {
+    if (!loading && token) {
       getUserData();
     }
-  }, [selectedOption, startMonth, endMonth]);
+  }, [selectedOption, startMonth, endMonth, selectedLeader]);
 
   const getUserData = async () => {
     if (leaderValueMapping.hasOwnProperty(selectedLeader.value)) {
@@ -69,12 +68,12 @@ const LeaderBoardDashboard = () => {
               {
                 operator: "gte",
                 field: "start_date",
-                value: startMonth,
+                value: formatDateToISOString(startMonth),
               },
               {
                 operator: "lte",
                 field: "end_date",
-                value: endMonth,
+                value: formatDateToISOString(endMonth),
               },
               {
                 field: "branch_id",
@@ -96,16 +95,20 @@ const LeaderBoardDashboard = () => {
           }
         );
         if (response && response.ok) {
-          const responseData = await response.json();
-          const transformedData = JSON.parse(responseData).data.map(item => {
+          const responseJson = await response.json();
+          const responseData = JSON.parse(responseJson);
+          console.log(responseData);
+          const NoOfMonths = getNoOfMonths();
+
+          const transformedData = responseData.data.map(item => {
             const kpi = item.KPI ? JSON.parse(item.KPI) : {};
 
-            const saleDeals = parseFloat(kpi.saleDeals ?? 0);
-            const rentDeals = parseFloat(kpi.rentDeals ?? 0);
-            const calls = parseFloat(kpi.calls ?? 0);
-            const viewing = parseFloat(kpi.viewing ?? 0);
-            const saleListings = parseFloat(kpi.saleListings ?? 0);
-            const rentListings = parseFloat(kpi.rentListings ?? 0);
+            const saleDeals = parseFloat(kpi.saleDeals ?? 0) * NoOfMonths;
+            const rentDeals = parseFloat(kpi.rentDeals ?? 0) * NoOfMonths;
+            const calls = parseFloat(kpi.calls ?? 0) * NoOfMonths;
+            const viewing = parseFloat(kpi.viewing ?? 0) * NoOfMonths;
+            const saleListings = parseFloat(kpi.saleListings ?? 0) * NoOfMonths;
+            const rentListings = parseFloat(kpi.rentListings ?? 0) * NoOfMonths;
 
             return {
               name: item.agent_name,
@@ -146,37 +149,24 @@ const LeaderBoardDashboard = () => {
             };
           });
 
-          const totals = transformedData.reduce(
+          const totalTargets = transformedData.reduce(
             (acc, item) => {
-              acc.saleListingValue += parseFloat(item.saleListingValue ?? 0);
-              acc.rentListingValue += parseFloat(item.rentListingValue ?? 0);
-              acc.salecommission += parseFloat(item.salecommission ?? 0);
-              acc.rentcommission += parseFloat(item.rentcommission ?? 0);
-              acc.saleListingsclosed += parseFloat(item.saleListingsclosed ?? 0);
-              acc.rentListingsclosed += parseFloat(item.rentListingsclosed ?? 0);
-              acc.phoneCalls += parseFloat(item.phoneCalls ?? 0);
-              acc.noOfViewings += parseFloat(item.noOfViewings ?? 0);
-              acc.saleListings += parseFloat(item.saleListings ?? 0);
-              acc.rentListings += parseFloat(item.rentListings ?? 0);
-              acc.saleDealsTarget += parseFloat(item.saleDealsTarget ?? 0);
-              acc.rentDealsTarget += parseFloat(item.rentDealsTarget ?? 0);
-              acc.callsTarget += parseFloat(item.callsTarget ?? 0);
-              acc.viewingTarget += parseFloat(item.viewingTarget ?? 0);
-              acc.saleListingsTarget += parseFloat(item.saleListingsTarget ?? 0);
-              acc.rentListingsTarget += parseFloat(item.rentListings ?? 0);
+              if (leaderValue === leaderValueMapping.saleDeals) {
+                acc.saleDealsTarget += parseFloat(item.saleDealsTarget ?? 0);
+              } else if (leaderValue === leaderValueMapping.rentalDeals) {
+                acc.rentDealsTarget += parseFloat(item.rentDealsTarget ?? 0);
+              } else if (leaderValue === leaderValueMapping.calls) {
+                acc.callsTarget += parseFloat(item.callsTarget ?? 0);
+              } else if (leaderValue === leaderValueMapping.viewings) {
+                acc.viewingTarget += parseFloat(item.viewingTarget ?? 0);
+              } else if (leaderValue === leaderValueMapping.salesListing) {
+                acc.saleListingsTarget += parseFloat(item.saleListingsTarget ?? 0);
+              } else if (leaderValue === leaderValueMapping.rentalListing) {
+                acc.rentListingsTarget += parseFloat(item.rentListingsTarget ?? 0);
+              }
               return acc;
             },
             {
-              saleListingValue: 0,
-              rentListingValue: 0,
-              salecommission: 0,
-              rentcommission: 0,
-              saleListingsclosed: 0,
-              rentListingsclosed: 0,
-              phoneCalls: 0,
-              noOfViewings: 0,
-              saleListings: 0,
-              rentListings: 0,
               saleDealsTarget: 0,
               rentDealsTarget: 0,
               callsTarget: 0,
@@ -185,42 +175,41 @@ const LeaderBoardDashboard = () => {
               rentListingsTarget: 0,
             }
           );
-
           const percentageTotals = {
-            saleDealsPct: totals.saleDealsTarget
+            saleDealsPct: (totalTargets.saleDealsTarget || leaderValue == leaderValueMapping.saleDeals)
               ? (
-                (totals.saleListingValue / totals.saleDealsTarget) *
+                (responseData.totals.saleListingValue / totalTargets.saleDealsTarget) *
                 100
               ).toFixed(2) + "%"
               : "0.00%",
-            rentDealsPct: totals.rentDealsTarget
+            rentDealsPct: (totalTargets.rentDealsTarget || leaderValue == leaderValueMapping.rentalDeals)
               ? (
-                (totals.rentListingValue / totals.rentDealsTarget) *
+                (responseData.totals.rentListingValue / totalTargets.rentDealsTarget) *
                 100
               ).toFixed(2) + "%"
               : "0.00%",
-            callsPct: totals.callsTarget
-              ? ((totals.phoneCalls / totals.callsTarget) * 100).toFixed(2) + "%"
+            callsPct: (totalTargets.callsTarget || leaderValue == leaderValueMapping.calls)
+              ? ((responseData.totals.phoneCalls / totalTargets.callsTarget) * 100).toFixed(2) + "%"
               : "0.00%",
-            viewingPct: totals.viewingTarget
-              ? ((totals.noOfViewings / totals.viewingTarget) * 100).toFixed(2) +
+            viewingPct: (totalTargets.viewingTarget || leaderValue == leaderValueMapping.viewings)
+              ? ((responseData.totals.noOfViewings / totalTargets.viewingTarget) * 100).toFixed(2) +
               "%"
               : "0.00%",
-            saleListingsPct: totals.saleListingsTarget
-              ? ((totals.saleListings / totals.saleListingsTarget) * 100).toFixed(
+            saleListingsPct: (totalTargets.saleListingsTarget || leaderValue == leaderValueMapping.salesListing)
+              ? ((responseData.totals.saleListings / totalTargets.saleListingsTarget) * 100).toFixed(
                 2
               ) + "%"
               : "0.00%",
-            rentListingsPct: totals.rentListingsTarget
-              ? ((totals.rentListings / totals.rentListingsTarget) * 100).toFixed(
+            rentListingsPct: (totalTargets.rentListingsTarget || leaderValue == leaderValueMapping.rentalListing)
+              ? ((responseData.totals.rentListings / totalTargets.rentListingsTarget) * 100).toFixed(
                 2
               ) + "%"
               : "0.00%",
           };
-          setDataTotals({ ...totals, ...percentageTotals });
-          console.log("Totals:", totals);
-          console.log("Percentage Totals:", percentageTotals);
-          console.log("data totals:", { ...totals, ...percentageTotals });
+
+          const totals = { ...responseData.totals, ...totalTargets, ...percentageTotals };
+          console.log(totals);
+          setDataTotals(totals);
 
           setSampleData(transformedData);
         } else {
@@ -274,6 +263,23 @@ const LeaderBoardDashboard = () => {
     }
   };
 
+  const formatDateToISOString = (date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Ensure two-digit month
+    const day = date.getDate().toString().padStart(2, '0'); // Ensure two-digit day
+    return `${year}-${month}-${day}T00:00:00`; // Local time without timezone
+  };
+
+  const getNoOfMonths = () => {
+    const start = new Date(startMonth);
+    const end = new Date(endMonth);
+    start.setDate(1);
+    end.setDate(1);
+    const yearDifference = end.getFullYear() - start.getFullYear();
+    const monthDifference = end.getMonth() - start.getMonth();
+    return yearDifference * 12 + monthDifference + 1;
+  };
+
   const handleLeaderClick = (option) => {
     if (option.subOptions) {
       setExpandedLeader(option.value === expandedLeader ? null : option.value);
@@ -282,10 +288,6 @@ const LeaderBoardDashboard = () => {
       setExpandedLeader(null); // Close other sub-options
     }
   };
-
-  useEffect(() => {
-    getUserData();
-  }, [selectedLeader]);
 
   const handleSelectionChange = (newSelection) => {
     setSelectedLeader(newSelection);
@@ -428,7 +430,7 @@ const LeaderBoardDashboard = () => {
               <AgentReportsTable />
             ) : selectedLeader.value === "leaders6" ? (
               <ReportsTable />
-            ) : selectedLeader.value === "leaders5" ? (
+            ) : selectedLeader.value === "totalDashboard" ? (
               <TotalDashboard data={sampleData} />
             ) : loading ? ( // Display loading state
               <div>Loading...</div>
@@ -443,9 +445,9 @@ const LeaderBoardDashboard = () => {
                     (selectedLeader.value == "calls" ? dataTotals.phoneCalls : (selectedLeader.value == "viewings" ? dataTotals.noOfViewings :
                       (selectedLeader.value == "salesListing" ? dataTotals.saleListings : dataTotals.rentListings)
                     )))}
-                  commission={selectedLeader.value == "saleDeals" ? NumberConversion(dataTotals.salecommission) : (selectedLeader.value == "rentalDeals" ?
-                    NumberConversion(dataTotals.rentcommission) : 0)}
-                  closed={selectedLeader.value == "saleDeals" ? dataTotals.saleListingsclosed : (selectedLeader.value == "rentalDeals" ? dataTotals.rentListingsclosed : 0)}
+                  commission={selectedLeader.value == "saleDeals" ? NumberConversion(dataTotals.saleCommission) : (selectedLeader.value == "rentalDeals" ?
+                    NumberConversion(dataTotals.rentCommission) : 0)}
+                  closed={selectedLeader.value == "saleDeals" ? dataTotals.saleListingsClosed : (selectedLeader.value == "rentalDeals" ? dataTotals.rentListingsClosed : 0)}
                   percentage={selectedLeader.value == "saleDeals" ? dataTotals.saleDealsPct : (selectedLeader.value == "rentalDeals" ? dataTotals.rentDealsPct :
                     (selectedLeader.value == "calls" ? dataTotals.callsPct : (selectedLeader.value == "viewings" ? dataTotals.viewingPct :
                       (selectedLeader.value == "salesListing" ? dataTotals.saleListingsPct : dataTotals.rentListingsPct)
@@ -739,7 +741,7 @@ const leaderOptions = [
   },
   {
     label: "Total Dashboards",
-    value: "leaders5",
+    value: "totalDashboard",
     icon: <MdSpaceDashboard />,
   },
   {
@@ -813,4 +815,5 @@ const leaderValueMapping = {
   viewings: 4,
   salesListing: 5,
   rentalListing: 6,
+  totalDashboard: 7,
 };
