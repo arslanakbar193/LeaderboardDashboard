@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { MdOutlineToggleOff, MdOutlineToggleOn } from "react-icons/md";
+import { NumberConversion } from '../components/common/CommonFunctions';
 
 const TotalDashboard = ({ data }) => {
   // Toggle state for the columns (totalCalls, totalViewings, totalListings)
   const [toggleStates, setToggleStates] = useState({
-    totalSalesDeals:false,
-    totalRentalDeals:false,
+    totalSalesDeals: false,
+    totalRentalDeals: false,
     totalCalls: false,
     totalViewings: false,
     totalSalesListings: false,
@@ -44,7 +45,7 @@ const TotalDashboard = ({ data }) => {
           <tr>
             <th>Agent Name</th>
             <th>Total Sales Deals
-            <div style={{ position: 'absolute', top: '11px',right:"10px" }}>
+              <div style={{ position: 'absolute', top: '11px', right: "10px" }}>
                 {toggleStates.totalSalesDeals ? (
                   <MdOutlineToggleOn
                     style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
@@ -59,7 +60,7 @@ const TotalDashboard = ({ data }) => {
               </div>
             </th>
             <th>Total Rental Deals
-            <div style={{ position: 'absolute', top: '11px',right:"10px" }}>
+              <div style={{ position: 'absolute', top: '11px', right: "10px" }}>
                 {toggleStates.totalRentalDeals ? (
                   <MdOutlineToggleOn
                     style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
@@ -77,7 +78,7 @@ const TotalDashboard = ({ data }) => {
             {/* Total Calls with Toggle */}
             <th>
               Total Calls
-              <div style={{ position: 'absolute', top: '11px',right:"10px"  }}>
+              <div style={{ position: 'absolute', top: '11px', right: "10px" }}>
                 {toggleStates.totalCalls ? (
                   <MdOutlineToggleOn
                     style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
@@ -95,7 +96,7 @@ const TotalDashboard = ({ data }) => {
             {/* Total Viewings with Toggle */}
             <th>
               Total Viewings
-              <div style={{ position: 'absolute', top: '11px',right:"10px"  }}>
+              <div style={{ position: 'absolute', top: '11px', right: "10px" }}>
                 {toggleStates.totalViewings ? (
                   <MdOutlineToggleOn
                     style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
@@ -112,8 +113,8 @@ const TotalDashboard = ({ data }) => {
 
             {/* Total Listings with Toggle */}
             <th>
-            Total Sales Listings
-              <div style={{ position: 'absolute', top: '11px',right:"10px"  }}>
+              Total Sales Listings
+              <div style={{ position: 'absolute', top: '11px', right: "10px" }}>
                 {toggleStates.totalSalesListings ? (
                   <MdOutlineToggleOn
                     style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
@@ -129,7 +130,7 @@ const TotalDashboard = ({ data }) => {
             </th>
             <th>
               Total Rental Listings
-              <div style={{ position: 'absolute', top: '11px',right:"10px"  }}>
+              <div style={{ position: 'absolute', top: '11px', right: "10px" }}>
                 {toggleStates.totalRentalListings ? (
                   <MdOutlineToggleOn
                     style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
@@ -151,12 +152,12 @@ const TotalDashboard = ({ data }) => {
             <tr key={index}>
               <td>{agent.name}</td>
               {/* <td>{agent.totalDeals}</td> */}
-              <td>{agent.totalSalesCalls}</td>
-              <td>{agent.totalRentalCalls}</td>
-              <td>{agent.totalViewings}</td>
-              <td>{agent.totalListings}</td>
-              <td>{agent.totalSalesListings}</td>
-              <td>{agent.totalRentalListings}</td>
+              <td>{NumberConversion(agent.saleListingValue)}</td>
+              <td>{NumberConversion(agent.rentListingValue)}</td>
+              <td>{agent.phoneCalls}</td>
+              <td>{agent.noOfViewings}</td>
+              <td>{agent.saleListings}</td>
+              <td>{agent.rentListings}</td>
             </tr>
           ))}
         </tbody>
