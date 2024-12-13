@@ -108,7 +108,7 @@ button.toggleSwitch:focus {
   outline: none;
 }
 .total-table th, .total-table td{
-  padding: 14px !important;
+  padding: 14px  6px !important;
 }
 .pagination{
   justify-content: end;
@@ -346,17 +346,17 @@ body{
 .rank.rank2{
   position: absolute;
   bottom: 0px;
-  left: 0;
+  left: -24px;
   right: 0;
 }
 .card-right{
   width:95%;
 }
-.card-right .profile-name{
+/* .card-right .profile-name{
   margin-left: 20px;
-}
+} */
 .card-right .deals-info{
-  margin-left:22px;
+  margin-left:0px;
   margin-top: 10px;
 }
 .ui.selection.dropdown .menu {
@@ -387,8 +387,12 @@ body{
 .range-slider {
   position: relative;
   width: 98%;
-  margin: 10px 0px 0px 18px;
+  /* margin: 10px 0px 0px 18px; */
+  margin: 10px 0px 0px 0px;
   pointer-events: none;
+}
+.card-left.center-items {
+  padding-right: 24px;
 }
 
 .slider {
@@ -434,7 +438,7 @@ body{
     transform: translateX(-50%);
     background-color: #1f7bc1;
     color: white;
-    padding: 10px 30px;
+    padding: 10px 25px;
     border-radius: 3px;
     font-size: 12px;
     font-weight: bold;
