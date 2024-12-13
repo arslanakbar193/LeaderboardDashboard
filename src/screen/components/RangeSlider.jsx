@@ -27,7 +27,7 @@ const RangeSlider = ({ value: initialValue = 0 }) => {
                 style={sliderStyle}
             />
             <div className="slider-value" style={{ left: `${value}%` }}>
-                {value}
+                {value + '%'}
             </div>
         </div>
     );
