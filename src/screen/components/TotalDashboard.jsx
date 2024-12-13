@@ -45,7 +45,7 @@ const TotalDashboard = ({ data }) => {
           <tr>
             <th>Agent Name</th>
             <th>Total Sales Deals
-              <div style={{ position: 'absolute', top: '11px', right: "10px" }}>
+              <div style={{ position: 'absolute', top: '11px', right: "4px" }}>
                 {toggleStates.totalSalesDeals ? (
                   <MdOutlineToggleOn
                     style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
@@ -60,7 +60,7 @@ const TotalDashboard = ({ data }) => {
               </div>
             </th>
             <th>Total Rental Deals
-              <div style={{ position: 'absolute', top: '11px', right: "10px" }}>
+              <div style={{ position: 'absolute', top: '11px', right: "4px" }}>
                 {toggleStates.totalRentalDeals ? (
                   <MdOutlineToggleOn
                     style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
@@ -78,7 +78,7 @@ const TotalDashboard = ({ data }) => {
             {/* Total Calls with Toggle */}
             <th>
               Total Calls
-              <div style={{ position: 'absolute', top: '11px', right: "10px" }}>
+              <div style={{ position: 'absolute', top: '11px', right: "4px" }}>
                 {toggleStates.totalCalls ? (
                   <MdOutlineToggleOn
                     style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
@@ -96,7 +96,7 @@ const TotalDashboard = ({ data }) => {
             {/* Total Viewings with Toggle */}
             <th>
               Total Viewings
-              <div style={{ position: 'absolute', top: '11px', right: "10px" }}>
+              <div style={{ position: 'absolute', top: '11px', right: "4px" }}>
                 {toggleStates.totalViewings ? (
                   <MdOutlineToggleOn
                     style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
@@ -114,7 +114,7 @@ const TotalDashboard = ({ data }) => {
             {/* Total Listings with Toggle */}
             <th>
               Total Sales Listings
-              <div style={{ position: 'absolute', top: '11px', right: "10px" }}>
+              <div style={{ position: 'absolute', top: '11px', right: "4px" }}>
                 {toggleStates.totalSalesListings ? (
                   <MdOutlineToggleOn
                     style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
@@ -130,7 +130,7 @@ const TotalDashboard = ({ data }) => {
             </th>
             <th>
               Total Rental Listings
-              <div style={{ position: 'absolute', top: '11px', right: "10px" }}>
+              <div style={{ position: 'absolute', top: '11px', right: "4px" }}>
                 {toggleStates.totalRentalListings ? (
                   <MdOutlineToggleOn
                     style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
