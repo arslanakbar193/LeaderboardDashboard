@@ -151,16 +151,58 @@ const TotalDashboard = ({ data }) => {
           {currentItems.map((agent, index) => (
             <tr key={index}>
               <td>{agent.name}</td>
-              {/* <td>{agent.totalDeals}</td> */}
-              <td>{NumberConversion(agent.saleListingValue)}</td>
-              <td>{NumberConversion(agent.rentListingValue)}</td>
-              <td>{agent.phoneCalls}</td>
-              <td>{agent.noOfViewings}</td>
-              <td>{agent.saleListings}</td>
-              <td>{agent.rentListings}</td>
+
+              <td>
+                {toggleStates.totalSalesDeals
+                  ? agent.saleDealsTarget
+                    ? `${((agent.saleListingValue / agent.saleDealsTarget) * 100).toFixed(2)}%`
+                    : "0.00%"
+                  : NumberConversion(agent.saleListingValue)}
+              </td>
+
+              <td>
+                {toggleStates.totalRentalDeals
+                  ? agent.rentDealsTarget
+                    ? `${((agent.rentListingValue / agent.rentDealsTarget) * 100).toFixed(2)}%`
+                    : "0.00%"
+                  : NumberConversion(agent.rentListingValue)}
+              </td>
+
+              <td>
+                {toggleStates.totalCalls
+                  ? agent.callsTarget
+                    ? `${((agent.phoneCalls / agent.callsTarget) * 100).toFixed(2)}%`
+                    : "0.00%"
+                  : agent.phoneCalls}
+              </td>
+
+              <td>
+                {toggleStates.totalViewings
+                  ? agent.viewingTarget
+                    ? `${((agent.noOfViewings / agent.viewingTarget) * 100).toFixed(2)}%`
+                    : "0.00%"
+                  : agent.noOfViewings}
+              </td>
+
+              <td>
+                {toggleStates.totalSalesListings
+                  ? agent.saleListingsTarget
+                    ? `${((agent.saleListings / agent.saleListingsTarget) * 100).toFixed(2)}%`
+                    : "0.00%"
+                  : agent.saleListings}
+              </td>
+
+              <td>
+                {toggleStates.totalRentalListings
+                  ? agent.rentListingsTarget
+                    ? `${((agent.rentListings / agent.rentListingsTarget) * 100).toFixed(2)}%`
+                    : "0.00%"
+                  : agent.rentListings}
+              </td>
             </tr>
           ))}
         </tbody>
+
       </table>
 
       {/* Pagination Controls */}
