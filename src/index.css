@@ -47,7 +47,7 @@ leader-options {
 }
 .leader-options li.active {
   color: #1f7bc1;
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #878787;
 }
  li {
   color: #515151;
@@ -99,5 +99,204 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+
+
+@media only screen and (max-width: 768px) {
+  .leaderboard-sidebar.col-2 {
+      left:-1000px;
+      position: absolute
+  }
+
+  .profile-image img {
+      width: 50px;
+      height: 50px
+  }
+
+  .profile-image {
+      top: -30px
+  }
+
+  .rank {
+      margin-top: 20px;
+      font-size: 14px
+  }
+
+  .earning,.earning svg {
+      font-size: 30px!important
+  }
+
+  .card-wrapper .card-items {
+      flex-direction: column
+  }
+
+  .right-sideContent {
+      width: 100%;
+      padding: 0px;
+  }
+  .top-right-select .ui.form +  div{
+    flex-direction: column;
+    align-items: flex-start !important;
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+
+  .status,.description div,.deals-info div.flex span,.profile-name,.topbar+.card-wrapper .card-items .deals-info span,.topbar+.card-wrapper .card-items .deals-info.deals-info2 {
+      font-size: 14px
+  }
+
+  .card-wrapper .card-items .cards {
+      width: 92%;
+      margin-bottom: 40px
+  }
+
+  body {
+      overflow-x: hidden
+  }
+
+  .card-wrapper.card-wrapper-second .card-items .cards {
+      padding-left: 0!important;
+      margin-bottom: 10px!important
+  }
+
+  .card-wrapper.card-wrapper-second .card-items .cards svg {
+      padding-left: 10px
+  }
+
+  .card-wrapper.card-wrapper-second .description {
+      padding-left: 20px
+  }
+
+  .card-right .deals-info,.card-right .profile-name,.range-slider {
+      margin-left: 0
+  }
+
+  .card-wrapper.card-wrapper-third .cards .card-left {
+      display: none
+  }
+
+  .slider-value {
+      top: -6px;
+      padding: 5px 25px
+  }
+
+  .card-wrapper.card-wrapper-third .card-items .cards {
+      justify-content: flex-start;
+      padding-left: 0
+  }
+
+  .pl-5 {
+      padding-right: 5px
+  }
+
+  .card-right {
+      padding-left: 10px
+  }
+
+  .pagination-controls span {
+      font-size: 13px
+  }
+
+  .pagination-controls button {
+      font-size: 14px
+  }
+
+  .pagination-controls {
+      text-align: center;
+      padding-right: 0
+  }
+
+  .topbar {
+      display: block;
+      width: 82%;
+      text-align: left
+  }
+
+  .top-right-select {
+      display: block
+  }
+
+  .top-right-select .field .text {
+      font-size: 12px;
+      margin-bottom: 10px;
+      width: 100%;
+      margin-left: 0px !important;
+  }
+
+  .top-right-select .ui.form:not(:first-child) {
+      width: 145px;
+      display: inline-block
+  }
+  .deals-info div.flex span {
+    padding-left: 1px;
+}
+
+  .top-right-select .ui.form .field {
+      display: inline-block;
+      width: 100%
+  }
+
+  .screen-button img {
+      width: 20px;
+      z-index: 11
+  }
+
+  .top-right-select .ui.form:first-child {
+      margin-bottom: 10px
+  }
+body{
+  background-color: #fff;
+}
+  body.fullscreen-mode .leaderboard-sidebar {
+      display: inline-block!important;
+      left: 0;
+      height: auto;
+      position: absolute;
+      z-index: 11;
+      background-color: #f1f1f1;
+      width: auto!important;
+      opacity: 1!important
+  }
+
+  .table-header h2 {
+      text-align: left;
+      font-size: 16px
+  }
+
+  .table-header-cell,.table-cell {
+      font-size: 13px;
+      width: 120px
+  }
+
+  .leader-options li>div>div {
+      font-size: 13px
+  }
+
+  .leader-options li .sub-child {
+      font-size: 13px
+  }
+
+  .leader-options li span>svg {
+      font-size: 18px
+  }
+
+  .leader-options li {
+      padding: 10px 5px
+  }
+
+  .leaderboard-sidebar>div>img {
+      margin-top: 30px;
+      width: 100px!important
+  }
+
+  .pagination {
+      justify-content: center;
+      font-size: 13px
+  }
+
+  .pagination button {
+      font-size: 12px!important
   }
 }

@@ -21,18 +21,23 @@
   max-width: 1440px;
 } */
  .dashboard-wrapper {
-  float: left;
-  width: 100%;
+  /* float: left;
+  width: 100%; */
+  display: flex; /* Enable Flexbox */
+  flex-wrap: nowrap; /* Prevent wrapping of sidebar and content */
+  min-height: 100vh; 
  }
  .leaderboard-sidebar{
   float: left;
-  width: 16%;
-  background-color: #0091ff26;
-  border-radius: 10px;
-  height: 100vh;
-  padding-top: 40px;
-  min-width: 260px;
-  /* transition: all 0.5s; */
+  /* width: 16%; */
+  background-color: #fff;
+  border-radius: 4px;
+  /* height: 100vh; */
+  flex: 0 0 300px; /* Fixed width of 250px for the sidebar */
+    /* background: #f4f4f4; */
+    padding: 1rem;
+    /* border-right: 1px solid #ddd; */
+    margin-right: 19px;
  }
  ul.leader-options {
   width: 80%;
@@ -50,8 +55,57 @@ body.fullscreen-mode .leaderboard-sidebar {
   display: none;
 }
 .right-sideContent {
-  width: 80%;
-  float: left;
+  /* width: 80%;
+  float: left; */
+  flex: 1; /* Take up remaining space */
+    padding: 1rem;
+    background: #fff;
+    overflow: hidden;
+}
+.branding {
+  text-align: center;
+  font-size: 10px;
+  position: absolute;
+  bottom: 0px;
+  left: 40px;
+}
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 400px;
+  /* position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto; */
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  margin: 0 2px;
+  border-radius: 50%;
+  background-color: #1F7BC1; /* Default blue color */
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.dot2 {
+  animation-delay: 0.2s;
+  background-color: #595A5C /* Red color */
+}
+
+.dot3 {
+  animation-delay: 0.4s;
+  background-color: #1F7BC1 /* Green color */
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 /* .fullscreen-mode .dashboard-wrapper {
   margin: auto;
@@ -644,4 +698,36 @@ body{
 }
 .table-header h2 {
   text-align: left;
+}
+/* @media only screen and (min-width:1366px) and (max-width:1440px){
+  .leaderboard-sidebar{
+    height: 123vh;
+  }
+}
+@media only screen  and (min-width:1441px) and (max-width:1660px){
+  .leaderboard-sidebar{
+    height: 123vh;
+  }
+}
+@media only screen  and (min-width:1661px) and (max-width:1680px){
+  .leaderboard-sidebar{
+    height: 103vh;
+  }
+} */
+
+
+/* For screens below 1024px */
+@media only screen and (max-width: 1024px) {
+  .leaderboard-sidebar {
+    height: auto; /* Auto height for smaller screens */
+    min-width: 200px;
+  }
+}
+
+/* For very small screens below 768px */
+@media only screen and (max-width: 768px) {
+  .leaderboard-sidebar {
+    height: auto; /* Auto height for mobile */
+    min-width: 100%; /* Full width for mobile */
+  }
 }

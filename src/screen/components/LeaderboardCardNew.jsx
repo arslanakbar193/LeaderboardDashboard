@@ -433,7 +433,11 @@ const LeaderBoardDashboard = () => {
             ) : selectedLeader.value === "totalDashboard" ? (
               <TotalDashboard data={sampleData} />
             ) : loading ? ( // Display loading state
-              <div>Loading...</div>
+              <div className="loading">
+                <div className="dot dot1"></div>
+                <div className="dot dot2"></div>
+                <div className="dot dot3"></div>
+              </div>
             ) : (
               <>
                 <LeaderbordCard
@@ -460,6 +464,7 @@ const LeaderBoardDashboard = () => {
                 />
               </>
             )}
+            <div className="branding">Powered by Goyzer.com | All rights reserved.</div>
           </div>
         </div>
       </div>
