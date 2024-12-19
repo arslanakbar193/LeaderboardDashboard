@@ -134,11 +134,30 @@ button:focus-visible {
 
   .right-sideContent {
       width: 100%;
-      padding: 0px 0px 45px 0px;
+      padding: 0px 0px 15px 0px;
       position: relative;
   }
   .branding {
-    bottom: 12px;
+    bottom: 0px;
+    right:0px;
+    position: relative;
+}
+.table-layout {
+  padding: 0px 14px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  border: 1px solid #fff;
+  margin: 0 auto;
+}
+.total-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 900px;
 }
   .top-right-select .ui.form +  div{
     flex-direction: column;
