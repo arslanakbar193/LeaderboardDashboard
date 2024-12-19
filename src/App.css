@@ -67,10 +67,11 @@ body.fullscreen-mode .leaderboard-sidebar {
 }
 .branding {
   text-align: center;
-  font-size: 10px;
-  position: absolute;
-  bottom: 0px;
-  left: 40px;
+    font-size: 10px;
+    position: absolute;
+    bottom: 0px;
+    text-align: center;
+    margin-left: 16px;
 }
 .loading {
   display: flex;
@@ -129,6 +130,12 @@ body.fullscreen-mode .leaderboard-sidebar {
   width: 29px;
   position: relative;
   top: 4px;
+}
+.card-wrapper.card-wrapper-third .flex.deals-info.justify-between{
+  text-align: left;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
 }
 /* .dashboard-wrapper {
   width: 100%;

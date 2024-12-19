@@ -130,7 +130,7 @@ const ThirdLeaderboardCard = ({ data, selectedLeader }) => {
           ))}
       </div>
       {/* Pagination Controls */}
-      {data.length > itemsPerPage && (
+      {/* {data.length > itemsPerPage && (
         <div className="pagination-controls">
           <button onClick={handlePreviousPage} disabled={currentPage === 1}>
             Previous
@@ -142,7 +142,7 @@ const ThirdLeaderboardCard = ({ data, selectedLeader }) => {
             Next
           </button>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

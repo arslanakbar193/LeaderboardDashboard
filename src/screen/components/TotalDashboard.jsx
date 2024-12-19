@@ -23,7 +23,7 @@ const TotalDashboard = ({ data }) => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Change this value based on your requirement
+  const itemsPerPage = 15; // Change this value based on your requirement
 
   // Calculate total pages
   const totalPages = Math.ceil(data.length / itemsPerPage);
@@ -45,30 +45,30 @@ const TotalDashboard = ({ data }) => {
           <tr>
             <th>Agent Name</th>
             <th>Total Sales Deals
-              <div style={{ position: 'absolute', top: '11px', right: "4px" }}>
+              <div style={{ position: 'absolute', top: '14px', right: "4px" }}>
                 {toggleStates.totalSalesDeals ? (
                   <MdOutlineToggleOn
-                    style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
+                    style={{ fontSize: '26px', color: "#1f7bc1", cursor: 'pointer' }}
                     onClick={() => handleToggle('totalSalesDeals')}
                   />
                 ) : (
                   <MdOutlineToggleOff
-                    style={{ fontSize: '32px', color: "#000", cursor: 'pointer' }}
+                    style={{ fontSize: '26px', color: "#000", cursor: 'pointer' }}
                     onClick={() => handleToggle('totalSalesDeals')}
                   />
                 )}
               </div>
             </th>
             <th>Total Rental Deals
-              <div style={{ position: 'absolute', top: '11px', right: "4px" }}>
+              <div style={{ position: 'absolute', top: '14px', right: "4px" }}>
                 {toggleStates.totalRentalDeals ? (
                   <MdOutlineToggleOn
-                    style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
+                    style={{ fontSize: '26px', color: "#1f7bc1", cursor: 'pointer' }}
                     onClick={() => handleToggle('totalRentalDeals')}
                   />
                 ) : (
                   <MdOutlineToggleOff
-                    style={{ fontSize: '32px', color: "#000", cursor: 'pointer' }}
+                    style={{ fontSize: '26px', color: "#000", cursor: 'pointer' }}
                     onClick={() => handleToggle('totalRentalDeals')}
                   />
                 )}
@@ -78,15 +78,15 @@ const TotalDashboard = ({ data }) => {
             {/* Total Calls with Toggle */}
             <th>
               Total Calls
-              <div style={{ position: 'absolute', top: '11px', right: "4px" }}>
+              <div style={{ position: 'absolute', top: '14px', right: "4px" }}>
                 {toggleStates.totalCalls ? (
                   <MdOutlineToggleOn
-                    style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
+                    style={{ fontSize: '26px', color: "#1f7bc1", cursor: 'pointer' }}
                     onClick={() => handleToggle('totalCalls')}
                   />
                 ) : (
                   <MdOutlineToggleOff
-                    style={{ fontSize: '32px', color: "#000", cursor: 'pointer' }}
+                    style={{ fontSize: '26px', color: "#000", cursor: 'pointer' }}
                     onClick={() => handleToggle('totalCalls')}
                   />
                 )}
@@ -96,15 +96,15 @@ const TotalDashboard = ({ data }) => {
             {/* Total Viewings with Toggle */}
             <th>
               Total Viewings
-              <div style={{ position: 'absolute', top: '11px', right: "4px" }}>
+              <div style={{ position: 'absolute', top: '14px', right: "4px" }}>
                 {toggleStates.totalViewings ? (
                   <MdOutlineToggleOn
-                    style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
+                    style={{ fontSize: '26px', color: "#1f7bc1", cursor: 'pointer' }}
                     onClick={() => handleToggle('totalViewings')}
                   />
                 ) : (
                   <MdOutlineToggleOff
-                    style={{ fontSize: '32px', color: "#000", cursor: 'pointer' }}
+                    style={{ fontSize: '26px', color: "#000", cursor: 'pointer' }}
                     onClick={() => handleToggle('totalViewings')}
                   />
                 )}
@@ -114,15 +114,15 @@ const TotalDashboard = ({ data }) => {
             {/* Total Listings with Toggle */}
             <th>
               Total Sales Listings
-              <div style={{ position: 'absolute', top: '11px', right: "4px" }}>
+              <div style={{ position: 'absolute', top: '14px', right: "4px" }}>
                 {toggleStates.totalSalesListings ? (
                   <MdOutlineToggleOn
-                    style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
+                    style={{ fontSize: '26px', color: "#1f7bc1", cursor: 'pointer' }}
                     onClick={() => handleToggle('totalSalesListings')}
                   />
                 ) : (
                   <MdOutlineToggleOff
-                    style={{ fontSize: '32px', color: "#000", cursor: 'pointer' }}
+                    style={{ fontSize: '26px', color: "#000", cursor: 'pointer' }}
                     onClick={() => handleToggle('totalSalesListings')}
                   />
                 )}
@@ -130,15 +130,15 @@ const TotalDashboard = ({ data }) => {
             </th>
             <th>
               Total Rental Listings
-              <div style={{ position: 'absolute', top: '11px', right: "4px" }}>
+              <div style={{ position: 'absolute', top: '14px', right: "4px" }}>
                 {toggleStates.totalRentalListings ? (
                   <MdOutlineToggleOn
-                    style={{ fontSize: '32px', color: "#1f7bc1", cursor: 'pointer' }}
+                    style={{ fontSize: '26px', color: "#1f7bc1", cursor: 'pointer' }}
                     onClick={() => handleToggle('totalRentalListings')}
                   />
                 ) : (
                   <MdOutlineToggleOff
-                    style={{ fontSize: '32px', color: "#000", cursor: 'pointer' }}
+                    style={{ fontSize: '26px', color: "#000", cursor: 'pointer' }}
                     onClick={() => handleToggle('totalRentalListings')}
                   />
                 )}

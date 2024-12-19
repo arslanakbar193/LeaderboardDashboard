@@ -134,8 +134,12 @@ button:focus-visible {
 
   .right-sideContent {
       width: 100%;
-      padding: 0px;
+      padding: 0px 0px 45px 0px;
+      position: relative;
   }
+  .branding {
+    bottom: 12px;
+}
   .top-right-select .ui.form +  div{
     flex-direction: column;
     align-items: flex-start !important;

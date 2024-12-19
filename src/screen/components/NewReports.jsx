@@ -241,7 +241,7 @@ const initialReportData = [
 const ReportsTable = () => {
   // Set pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 12;
+  const rowsPerPage = 18;
 
   // Paginate data
   const indexOfLastRow = currentPage * rowsPerPage;
