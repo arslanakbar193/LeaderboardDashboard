@@ -528,6 +528,7 @@ body{
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
+  text-align: center;
 }
 
 .total-table th {
@@ -667,6 +668,7 @@ body{
 
 .table-header-cell, .table-cell {
   display: table-cell;
+  text-align: center !important;
   padding: 8px 16px;
   border: 1px solid #ddd;
   text-align: left;
