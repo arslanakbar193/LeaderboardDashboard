@@ -9,23 +9,29 @@ import { BiListUl } from "react-icons/bi";
 import Dropdown from "../components/Dropdown";
 import TotalDashboard from "../components/TotalDashboard";
 import { MdSpaceDashboard } from "react-icons/md";
-import ReportsTable from "./NewReports";
-import AgentReportsTable from "./AgentReport";
+import LeadSourceReport from "./LeadSourceReport";
+import AgentWiseLeadReport from "./AgentWiseLeadReport";
+import AverageResponseTimeReport from "./AverageResponseTimeReport";
 import { NumberConversion, fetchWithTokenRetry } from '../components/common/CommonFunctions';
 
 import FullscreenToggle from "../components/FullScreen";
 import { HiDocumentReport, HiOutlineDocumentReport } from "react-icons/hi";
-import AgentResponseTable from "./AgentResponseTime";
+
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import MonthYearRangePicker from "./MonthYearPicker";
 
 const LeaderBoardDashboard = () => {
-  const ApiUrl = "http://localhost:54103";
+  const [apiUrl , setApiUrl] = useState('');
+  const [groupId, setGroupId] = useState('');
+  const [companyLogo , setCompanyLogo] = useState('');
   const [selectedLeader, setSelectedLeader] = useState(leaderOptions[0].subOptions[0]);
   const [expandedLeader, setExpandedLeader] = useState(null);
   const [selectedOption, setSelectedOption] = useState({ value: 0, label: 'ALL' });
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [sampleData, setSampleData] = useState([]);
+  const [leadSourceReportData, setleadSourceReportData] = useState([]);
+  const [agentWiseLeadReportData, setAgentWiseLeadReportData] = useState([]);
+  const [averageResponseTimeReportData, setaverageResponseTimeReportData] = useState([]);
   const [dataTotals, setDataTotals] = useState({});
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);
@@ -41,7 +47,12 @@ const LeaderBoardDashboard = () => {
   });
 
   useEffect(() => {
-    setEnvironment();
+    if (opener?.parent?.application?.context != null) {
+      setEnvironment();
+    } else {
+      alert("Invalid operation. Please reopen the leaderboard from the main application.");
+      window.close();
+    }
   }, []);
 
   useEffect(() => {
@@ -84,7 +95,7 @@ const LeaderBoardDashboard = () => {
         };
 
         const response = await fetchWithTokenRetry(
-          ApiUrl + '/leaderboard/' + leaderValue,
+          apiUrl + '/leaderboard/' + leaderValue,
           {
             method: "POST",
             headers: {
@@ -97,7 +108,6 @@ const LeaderBoardDashboard = () => {
         if (response && response.ok) {
           const responseJson = await response.json();
           const responseData = JSON.parse(responseJson);
-          console.log(responseData);
           const NoOfMonths = getNoOfMonths();
 
           const transformedData = responseData.data.map(item => {
@@ -208,18 +218,19 @@ const LeaderBoardDashboard = () => {
           };
 
           const totals = { ...responseData.totals, ...totalTargets, ...percentageTotals };
-          console.log(totals);
           setDataTotals(totals);
 
-          setSampleData(transformedData);
+          setSampleData(transformedData);                     
         } else {
           console.error("Failed to fetch data:", response.status, response.statusText);
         }
       } catch (error) {
         console.log(error);
         setLoading(false);
-        setSampleData(initialSampleData);
-        setDataTotals({ ...sampleDataTotals, ...sampleDataPercentageTotals });
+        alert("Invalid operation. Please reopen the leaderboard from the main application.");
+        window.close();
+        //setSampleData(initialSampleData);
+        //setDataTotals({ ...sampleDataTotals, ...sampleDataPercentageTotals });
       } finally {
         setLoading(false);
       }
@@ -229,7 +240,7 @@ const LeaderBoardDashboard = () => {
   const populateBranches = async () => {
     try {
       const response = await fetchWithTokenRetry(
-        ApiUrl + '/users/branches',
+        apiUrl + '/users/branches',
         {
           method: "GET",
           headers: {
@@ -240,7 +251,6 @@ const LeaderBoardDashboard = () => {
       );
       if (response && response.ok) {
         const responseData = await response.json();
-        console.log(responseData);
         const everyoneOptions = [
           { value: 0, label: "ALL" },
           ...responseData.map((branch) => ({ value: branch.id, label: branch.name })),
@@ -253,16 +263,14 @@ const LeaderBoardDashboard = () => {
       setDropdownOptions(everyoneOptions);
     }
   };
-
+    
   const setEnvironment = () => {
-    if (process.env.NODE_ENV === 'development') {
-      setToken('bearer hosLKzrH8zEyEUq9KLgo6DOV-tWq67D5tGedfoQW7zM_dUuNIpuq4fRSp2tbafk2z7UrKzTnfao-XhoKWin6zwz2igXLMTvnW_3nw5jPnT4um3J1_EtNnRhoFIEzlNUAFOn4G_fipnEYMBiYQa0KhfBwmJ1J4UoJdexYT-8qj86p6J79LK3AAoRNIdY2rZbmbPudLxLiCLxO9FCD3VFcWMN0q-wqFuyvqXFz7ONZ2Mk1ok43C1cBHjYa-MBxnQxu4x0L2um6BjIG16GkS1BDJkdvJLi1vfgjA_42bozCh5oPuRraXTbj20AKOqHDT1WWnoZyEYgmt3vl7HsuznIpDpxDXD2k9b-tTCB9hcom1M5F-vhT7Xk2v7MmI01M6rZLykgBY4TjPfzUHuUO6tlzU2_KrrUrVIRC_Y4rvtZeA3qhCgM4d2iZvyC9EzW3DM5nl9TTqWU05BUlvHCoqlFbX2xVHR7mhHhUGq66h4iMV44ke0Zd01T_eiFjOC9C94_CNM5A3HSbhYZirPdzEL2QEvBweZZh3tBzMxD0kFd85gM');
-    }
-    else {
-      setToken(`Bearer ${JSON.parse(localStorage.jStorage)[opener.parent.application.context.get_apiTokenKey()]}`);
-    }
+    setToken(`Bearer ${JSON.parse(localStorage.jStorage)[opener.parent.application.context.get_apiTokenKey()]}`);
+    setApiUrl(opener.parent.application.context.get_apiUrl());
+    setGroupId(opener.parent.application.context.get_groupId());
+    setCompanyLogo(opener.parent.application.context.get_companyLogoUrl());
   };
-
+  
   const formatDateToISOString = (date) => {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Ensure two-digit month
@@ -300,8 +308,114 @@ const LeaderBoardDashboard = () => {
       // Otherwise, add it
       onSelectedChange([...selected, option]);
     }
-  };
+  }; 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!loading && token) {      
+        if (selectedLeader.value === "agentwiseleadreport") {
+          const data = await getAgentWiseLeadReport();
+          setAgentWiseLeadReportData(data);
+        } else if (selectedLeader.value === "leadsourcereport") {
+          const data = await getLeadSourceReport();
+          setleadSourceReportData(data);
+        } else if (selectedLeader.value === "averageresponsetimereport") {
+          const data = await getAverageResponseTimeReport();
+          setaverageResponseTimeReportData(data);
+        }        
+      }
+    };
+    fetchData();
+  }, [startMonth, endMonth, selectedLeader.value]); 
+  
+  const getLeadSourceReport = async () =>
+    {      
+      try {
+        const DashboardGraph = {
+         id: opener.parent.application.context.get_userId(),
+          startDate: formatDateToISOString(startMonth),
+          endDate: formatDateToISOString(endMonth),
+        };
+        const response = await fetchWithTokenRetry(
+          apiUrl + '/graph/leadssource',
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              'Authorization': token
+            },
+            body: JSON.stringify(DashboardGraph),
+          }
+        );
+        if (response && response.ok) {
+          const responseJson = await response.json();
+          console.log(responseJson);
+          return responseJson;
+        }
+      } catch (error) {
+        console.error("Error fetching lead source report:", error);
+       return {};
+      }
+    };
 
+    const getAgentWiseLeadReport = async () =>
+      {      
+        try {
+          const DashboardGraph = {
+           id: opener.parent.application.context.get_userId(),
+            startDate: formatDateToISOString(startMonth),
+            endDate: formatDateToISOString(endMonth),
+          };
+          const response = await fetchWithTokenRetry(
+            apiUrl + '/graph/agentwiseleadreport',
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                'Authorization': token
+              },
+              body: JSON.stringify(DashboardGraph),
+            }
+          );
+          if (response && response.ok) {
+            const responseJson = await response.json();
+            console.log(responseJson);
+            return responseJson;
+          }
+        } catch (error) {
+          console.error("Error fetching agent wise lead report:", error);
+         return {};
+        }
+      };
+      
+      const getAverageResponseTimeReport = async () =>
+        {      
+          try {
+            const DashboardGraph = {
+             id: opener.parent.application.context.get_userId(),
+              startDate: formatDateToISOString(startMonth),
+              endDate: formatDateToISOString(endMonth),
+            };
+            const response = await fetchWithTokenRetry(
+              apiUrl + '/averageresponsetimereport',
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  'Authorization': token
+                },
+                body: JSON.stringify(DashboardGraph),
+              }
+            );
+            if (response && response.ok) {
+              const responseJson = await response.json();
+              console.log(responseJson);
+              return responseJson;
+            }
+          } catch (error) {
+            console.error("Error fetching avergae response time report:", error);
+           return {};
+          }
+        };
   return (
     <>
       <div className="container-fluid">
@@ -309,7 +423,7 @@ const LeaderBoardDashboard = () => {
           <div className="leaderboard-sidebar col-2">
             <div>
               <img
-                src="https://demo.goyzer.com/uploadedfiles/Group/2677/logo__original.png?v=1.1"
+                src={companyLogo}
                 style={{ width: "150px", marginBottom: "20px" }}
               />{" "}
             </div>
@@ -424,12 +538,12 @@ const LeaderBoardDashboard = () => {
               </div>
             </div>
 
-            {selectedLeader.value === "leaders8" ? (
-              <AgentResponseTable />
-            ) : selectedLeader.value === "leaders7" ? (
-              <AgentReportsTable />
-            ) : selectedLeader.value === "leaders6" ? (
-              <ReportsTable />
+            {selectedLeader.value === "averageresponsetimereport" ? (
+              <AverageResponseTimeReport  data={averageResponseTimeReportData}/>
+            ) : selectedLeader.value === "agentwiseleadreport" ? (
+              <AgentWiseLeadReport data={agentWiseLeadReportData}/>
+            ) : selectedLeader.value === "leadsourcereport" ? (
+              <LeadSourceReport data={leadSourceReportData} />
             ) : selectedLeader.value === "totalDashboard" ? (
               <TotalDashboard data={sampleData} />
             ) : loading ? ( // Display loading state
@@ -751,17 +865,17 @@ const leaderOptions = [
   },
   {
     label: "Lead Source Report",
-    value: "leaders6",
+    value: "leadsourcereport",
     icon: <HiDocumentReport />,
   },
   {
     label: "Agent Lead Report",
-    value: "leaders7",
+    value: "agentwiseleadreport",
     icon: <HiOutlineDocumentReport />,
   },
   {
     label: "Agent Response Time",
-    value: "leaders8",
+    value: "averageresponsetimereport",
     icon: <HiOutlineDocumentReport />,
   },
 ];
