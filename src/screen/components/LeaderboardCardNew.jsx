@@ -245,8 +245,7 @@ const LeaderBoardDashboard = () => {
       } catch (error) {
         console.log(error);
         setLoading(false);
-        alert("Invalid operation. Please reopen the leaderboard from the main application.");
-        window.close();
+        alert("There is an error in pulling the data. Contact support to review it.");
         //setSampleData(initialSampleData);
         //setDataTotals({ ...sampleDataTotals, ...sampleDataPercentageTotals });
       } finally {
