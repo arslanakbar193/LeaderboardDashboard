@@ -13,7 +13,6 @@ import LeadSourceReport from "./LeadSourceReport";
 import AgentWiseLeadReport from "./AgentWiseLeadReport";
 import AverageResponseTimeReport from "./AverageResponseTimeReport";
 import { NumberConversion, fetchWithTokenRetry } from '../components/common/CommonFunctions';
-
 import FullscreenToggle from "../components/FullScreen";
 import { HiDocumentReport, HiOutlineDocumentReport } from "react-icons/hi";
 
@@ -29,6 +28,7 @@ const LeaderBoardDashboard = () => {
   const [selectedOption, setSelectedOption] = useState({ value: 0, label: 'ALL' });
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [sampleData, setSampleData] = useState([]);
+  const [profileData, setProfileData] = useState([]);
   const [leadSourceReportData, setleadSourceReportData] = useState([]);
   const [agentWiseLeadReportData, setAgentWiseLeadReportData] = useState([]);
   const [averageResponseTimeReportData, setaverageResponseTimeReportData] = useState([]);
@@ -61,6 +61,12 @@ const LeaderBoardDashboard = () => {
       populateBranches();
     }
   }, [token]);
+
+  useEffect(()=>{
+    if(profileData.length === 0){
+      getAgentImage();
+    }
+  },[profileData])
 
   useEffect(() => {
     if (!loading && token) {
@@ -111,7 +117,7 @@ const LeaderBoardDashboard = () => {
           const NoOfMonths = getNoOfMonths();
 
           const transformedData = responseData.data.map(item => {
-            const kpi = item.KPI ? JSON.parse(item.KPI) : {};
+              const kpi = item.KPI ? JSON.parse(item.KPI) : {};
 
             const saleDeals = parseFloat(kpi.saleDeals ?? 0) * NoOfMonths;
             const rentDeals = parseFloat(kpi.rentDeals ?? 0) * NoOfMonths;
@@ -121,6 +127,7 @@ const LeaderBoardDashboard = () => {
             const rentListings = parseFloat(kpi.rentListings ?? 0) * NoOfMonths;
 
             return {
+              id: item.agent_id,
               name: item.agent_name,
               saleListingValue: item.sale_listings_value,
               rentListingValue: item.rent_listings_value,
@@ -184,43 +191,54 @@ const LeaderBoardDashboard = () => {
               saleListingsTarget: 0,
               rentListingsTarget: 0,
             }
-          );
-          const percentageTotals = {
-            saleDealsPct: (totalTargets.saleDealsTarget || leaderValue == leaderValueMapping.saleDeals)
-              ? (
-                (responseData.totals.saleListingValue / totalTargets.saleDealsTarget) *
-                100
-              ).toFixed(2) + "%"
-              : "0.00%",
-            rentDealsPct: (totalTargets.rentDealsTarget || leaderValue == leaderValueMapping.rentalDeals)
-              ? (
-                (responseData.totals.rentListingValue / totalTargets.rentDealsTarget) *
-                100
-              ).toFixed(2) + "%"
-              : "0.00%",
-            callsPct: (totalTargets.callsTarget || leaderValue == leaderValueMapping.calls)
-              ? ((responseData.totals.phoneCalls / totalTargets.callsTarget) * 100).toFixed(2) + "%"
-              : "0.00%",
-            viewingPct: (totalTargets.viewingTarget || leaderValue == leaderValueMapping.viewings)
-              ? ((responseData.totals.noOfViewings / totalTargets.viewingTarget) * 100).toFixed(2) +
-              "%"
-              : "0.00%",
-            saleListingsPct: (totalTargets.saleListingsTarget || leaderValue == leaderValueMapping.salesListing)
-              ? ((responseData.totals.saleListings / totalTargets.saleListingsTarget) * 100).toFixed(
-                2
-              ) + "%"
-              : "0.00%",
-            rentListingsPct: (totalTargets.rentListingsTarget || leaderValue == leaderValueMapping.rentalListing)
-              ? ((responseData.totals.rentListings / totalTargets.rentListingsTarget) * 100).toFixed(
-                2
-              ) + "%"
-              : "0.00%",
-          };
-
+            );
+            const percentageTotals = {
+                saleDealsPct: (totalTargets.saleDealsTarget || leaderValue == leaderValueMapping.saleDeals)
+                    ? (
+                        (responseData.totals.saleListingValue / totalTargets.saleDealsTarget) *
+                        100
+                    ).toFixed(2) + "%"
+                    : "0.00%",
+                rentDealsPct: (totalTargets.rentDealsTarget || leaderValue == leaderValueMapping.rentalDeals)
+                    ? (
+                        (responseData.totals.rentListingValue / totalTargets.rentDealsTarget) *
+                        100
+                    ).toFixed(2) + "%"
+                    : "0.00%",
+                callsPct: (totalTargets.callsTarget || leaderValue == leaderValueMapping.calls)
+                    ? ((responseData.totals.phoneCalls / totalTargets.callsTarget) * 100).toFixed(2) + "%"
+                    : "0.00%",
+                viewingPct: (totalTargets.viewingTarget || leaderValue == leaderValueMapping.viewings)
+                    ? ((responseData.totals.noOfViewings / totalTargets.viewingTarget) * 100).toFixed(2) +
+                    "%"
+                    : "0.00%",
+                saleListingsPct: (totalTargets.saleListingsTarget || leaderValue == leaderValueMapping.salesListing)
+                    ? ((responseData.totals.saleListings / totalTargets.saleListingsTarget) * 100).toFixed(
+                        2
+                    ) + "%"
+                    : "0.00%",
+                rentListingsPct: (totalTargets.rentListingsTarget || leaderValue == leaderValueMapping.rentalListing)
+                    ? ((responseData.totals.rentListings / totalTargets.rentListingsTarget) * 100).toFixed(
+                        2
+                    ) + "%"
+                    : "0.00%",
+            };
+          
           const totals = { ...responseData.totals, ...totalTargets, ...percentageTotals };
           setDataTotals(totals);
 
-          setSampleData(transformedData);                     
+          setSampleData(transformedData);
+          if(profileData.length > 0){
+            setSampleData((prevData) =>
+              prevData.map((item) => {
+                const updated = profileData.find((result) => result.id === item.id);
+                return updated ? { ...item, profile: updated.profile } : item;
+              })
+            );
+          }
+          else{
+            getAgentImage();
+          }
         } else {
           console.error("Failed to fetch data:", response.status, response.statusText);
         }
@@ -263,7 +281,50 @@ const LeaderBoardDashboard = () => {
       setDropdownOptions(everyoneOptions);
     }
   };
-    
+
+  const getAgentImage = async () => {
+      const imagePromises = sampleData.map(async (item) => {
+        try {
+          const response = await fetchWithTokenRetry(
+            `${apiUrl}/documents/${item.id}/UserMaintenance`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+              }
+            }
+          );
+
+          if (!response.ok) {
+            console.warn(`Request failed for ID ${item.id}:`, response.status);
+            return null;
+          }
+
+          const data = await response.json();
+          if (data.length > 0) {
+            const imageUrl = `${location.origin}/${data[0].name}`;
+            return { id: item.id, profile: imageUrl };
+          }
+        } catch (error) {
+          console.error(`Error fetching image for ID ${item.id}:`, error);
+          return null;
+        }
+      });
+
+      const imageResults = (await Promise.all(imagePromises)).filter(Boolean);
+
+      setSampleData((prevData) =>
+        prevData.map((item) => {
+          const updated = imageResults.find((result) => result.id === item.id);
+          return updated ? { ...item, profile: updated.profile } : item;
+        })
+      );
+      
+      setProfileData(imageResults);
+
+  };
+
   const setEnvironment = () => {
     setToken(`Bearer ${JSON.parse(localStorage.jStorage)[opener.parent.application.context.get_apiTokenKey()]}`);
     setApiUrl(opener.parent.application.context.get_apiUrl());
@@ -568,7 +629,7 @@ const LeaderBoardDashboard = () => {
                   closed={selectedLeader.value == "saleDeals" ? dataTotals.saleListingsClosed : (selectedLeader.value == "rentalDeals" ? dataTotals.rentListingsClosed : 0)}
                   percentage={selectedLeader.value == "saleDeals" ? dataTotals.saleDealsPct : (selectedLeader.value == "rentalDeals" ? dataTotals.rentDealsPct :
                     (selectedLeader.value == "calls" ? dataTotals.callsPct : (selectedLeader.value == "viewings" ? dataTotals.viewingPct :
-                      (selectedLeader.value == "salesListing" ? dataTotals.saleListingsPct : dataTotals.rentListingsPct)
+                        (selectedLeader.value == "salesListing" ? dataTotals.saleListingsPct : dataTotals.rentListingsPct)
                     )))}
                   selectedLeader={selectedLeader}
                 />

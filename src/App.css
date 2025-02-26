@@ -296,6 +296,12 @@ body{
   width:90px;
   height: 90px;
   object-fit: cover;
+  border-radius:50%;
+}
+.leader-board .card-left.center-items img{
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
 }
 .rank {
   width: 30px;

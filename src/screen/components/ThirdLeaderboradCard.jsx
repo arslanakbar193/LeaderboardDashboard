@@ -75,7 +75,7 @@ const ThirdLeaderboardCard = ({ data, selectedLeader }) => {
   };
 
   return (
-    <div className="card-wrapper card-wrapper-third">
+    <div className="card-wrapper card-wrapper-third leader-board">
       <div className="card-items">
         {filteredData &&
           filteredData.length > 0 &&
