@@ -282,34 +282,29 @@ const LeaderBoardDashboard = () => {
   };
 
   const getAgentImage = async () => {
-      const imagePromises = sampleData.map(async (item) => {
-        try {
-          const response = await fetchWithTokenRetry(
-            `${apiUrl}/documents/${item.id}/UserMaintenance`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": token
-              }
-            }
-          );
-
-          if (!response.ok) {
-            console.warn(`Request failed for ID ${item.id}:`, response.status);
-            return null;
+    const imagePromises = sampleData.map(async (item) => {
+      const response = await fetchWithTokenRetry(
+        `${apiUrl}/documents/${item.id}/UserMaintenance`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": token
           }
-
-          const data = await response.json();
-          if (data.length > 0) {
-            const imageUrl = `${location.origin}/${data[0].name}`;
-            return { id: item.id, profile: imageUrl };
-          }
-        } catch (error) {
-          console.error(`Error fetching image for ID ${item.id}:`, error);
-          return null;
         }
-      });
+      );
+
+      if (!response.ok) {
+        console.warn(`Request failed for ID ${item.id}:`, response.status);
+        return null;
+      }
+
+      const data = await response.json();
+      if (data.length > 0) {
+        const imageUrl = `${location.origin}/${data[0].name}`;
+        return { id: item.id, profile: imageUrl };
+      }
+    });
 
       const imageResults = (await Promise.all(imagePromises)).filter(Boolean);
 
