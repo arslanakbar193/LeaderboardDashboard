@@ -257,7 +257,7 @@ const LeaderBoardDashboard = () => {
   const populateBranches = async () => {
     try {
       const response = await fetchWithTokenRetry(
-        apiUrl + '/users/branches',
+        apiUrl + '/users/all-branches',
         {
           method: "GET",
           headers: {
@@ -380,7 +380,7 @@ const LeaderBoardDashboard = () => {
       }
     };
     fetchData();
-  }, [startMonth, endMonth, selectedLeader.value]); 
+  }, [startMonth, endMonth, selectedLeader.value,selectedOption]); 
   
   const getLeadSourceReport = async () =>
     {      
@@ -415,10 +415,15 @@ const LeaderBoardDashboard = () => {
     const getAgentWiseLeadReport = async () =>
       {      
         try {
+          const selectedIds = selectedOption.value === 0
+          ? dropdownOptions.filter(option => option.value !== 0).map(option => option.value).join(',')
+          : selectedOption.value;
+
           const DashboardGraph = {
-           id: opener.parent.application.context.get_userId(),
+            id: opener.parent.application.context.get_userId(),
             startDate: formatDateToISOString(startMonth),
             endDate: formatDateToISOString(endMonth),
+            branch: selectedIds,
           };
           const response = await fetchWithTokenRetry(
             apiUrl + '/graph/agentwiseleadreport',
@@ -586,7 +591,7 @@ const LeaderBoardDashboard = () => {
                 />
                 <Dropdown
                   label="Select Option"
-                  options={dropdownOptions}
+                  options={dropdownOptions}                 
                   selected={selectedOption}
                   onSelectedChange={setSelectedOption}
                 />

@@ -9,6 +9,7 @@ const AgentWiseLeadReport = ({ data }) => {
         const total = leadStages.reduce((sum, [, value]) => sum + value.Count, 0);
         return {
           name: agent.Agent,
+          branch: agent.Branch,
           leadStages,
           total,
         };
@@ -40,6 +41,7 @@ const AgentWiseLeadReport = ({ data }) => {
         <div className="table">
           <div className="table-header-row">
             <div className="table-header-cell sticky-col">Agent</div>
+            <div className="table-header-cell">Branch</div>
             {columns.map((stage, index) => (
               <div key={index} className="table-header-cell">
                 {stage}
@@ -50,6 +52,7 @@ const AgentWiseLeadReport = ({ data }) => {
           {currentRows.map((row, rowIndex) => (
             <div key={rowIndex} className="table-row">
               <div className="table-cell sticky-col">{row.name}</div>
+              <div className="table-cell">{row.branch}</div> 
               {row.leadStages.map(([stage, value], stageIndex) => (
                 <div key={stageIndex} className="table-cell">
                   {value.Count}
