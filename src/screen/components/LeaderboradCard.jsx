@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CiDollar } from "react-icons/ci";
+import AEDIcon from "../../images/aed-coin.png";
 import { BsCash } from "react-icons/bs";
 import { MdLabelOutline } from "react-icons/md";
 import { LiaPercentageSolid } from "react-icons/lia";
@@ -12,9 +12,9 @@ import { NumberConversion } from '../components/common/CommonFunctions';
 const LeaderboradCard = ({ data, selectedLeader }) => {
   const [filteredData, setFilteredData] = useState([]);
   const iconMap = {
-    saleDeals: <CiDollar />,
-    rentalDeals: <CiDollar />,
-    leaders: <CiDollar style={{ fontSize: "50px" }} />,
+    saleDeals: <img src={AEDIcon} alt="AED" style={{ width: "50px" }} />,
+    rentalDeals: <img src={AEDIcon} alt="AED" style={{ width: "50px" }} />,
+    leaders: <img src={AEDIcon} alt="AED" style={{ width: "50px" }} />,
     calls: <MdOutlineCall style={{ fontSize: "50px" }} />,
     viewings: <CiViewBoard style={{ fontSize: "50px" }} />,
     leaders4: <BiListUl style={{ fontSize: "50px" }} />,
