@@ -388,7 +388,7 @@ const LeaderBoardDashboard = () => {
         const DashboardGraph = {
          id: opener.parent.application.context.get_userId(),
           startDate: formatDateToISOString(startMonth),
-          endDate: formatDateToISOString(endMonth),
+          endDate: formatDateToISOString(new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 0)),
         };
         const response = await fetchWithTokenRetry(
           apiUrl + '/graph/leadssource',
@@ -422,7 +422,7 @@ const LeaderBoardDashboard = () => {
           const DashboardGraph = {
             id: opener.parent.application.context.get_userId(),
             startDate: formatDateToISOString(startMonth),
-            endDate: formatDateToISOString(endMonth),
+            endDate: formatDateToISOString(new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 0)),
             branch: selectedIds,
           };
           const response = await fetchWithTokenRetry(
@@ -453,7 +453,7 @@ const LeaderBoardDashboard = () => {
             const DashboardGraph = {
              id: opener.parent.application.context.get_userId(),
               startDate: formatDateToISOString(startMonth),
-              endDate: formatDateToISOString(endMonth),
+              endDate: formatDateToISOString(new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 0)),
             };
             const response = await fetchWithTokenRetry(
               apiUrl + '/averageresponsetimereport',
