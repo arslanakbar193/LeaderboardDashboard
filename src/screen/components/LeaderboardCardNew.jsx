@@ -146,10 +146,10 @@ const LeaderBoardDashboard = () => {
               saleListingsTarget: saleListings,
               rentListingsTarget: rentListings,
               saleDealsPct: saleDeals
-                ? ((item.sale_listings_value / saleDeals) * 100).toFixed(2) + "%"
+                ? ((item.sale_listings_commission / saleDeals) * 100).toFixed(2) + "%"
                 : "0.00%",
               rentDealsPct: rentDeals
-                ? ((item.rent_listings_value / rentDeals) * 100).toFixed(2) + "%"
+                ? ((item.rent_listings_commission / rentDeals) * 100).toFixed(2) + "%"
                 : "0.00%",
               callsPct: calls
                 ? ((item.phone_calls / calls) * 100).toFixed(2) + "%"
@@ -195,13 +195,13 @@ const LeaderBoardDashboard = () => {
             const percentageTotals = {
                 saleDealsPct: (totalTargets.saleDealsTarget || leaderValue == leaderValueMapping.saleDeals)
                     ? (
-                        (responseData.totals.saleListingValue / totalTargets.saleDealsTarget) *
+                        (responseData.totals.saleCommission / totalTargets.saleDealsTarget) *
                         100
                     ).toFixed(2) + "%"
                     : "0.00%",
                 rentDealsPct: (totalTargets.rentDealsTarget || leaderValue == leaderValueMapping.rentalDeals)
                     ? (
-                        (responseData.totals.rentListingValue / totalTargets.rentDealsTarget) *
+                        (responseData.totals.rentCommission / totalTargets.rentDealsTarget) *
                         100
                     ).toFixed(2) + "%"
                     : "0.00%",
@@ -619,12 +619,12 @@ const LeaderBoardDashboard = () => {
                   selectedLeader={selectedLeader}
                 />
                 <SecondLeaderboardCard
-                  totals={selectedLeader.value == "saleDeals" ? NumberConversion(dataTotals.saleListingValue) : (selectedLeader.value == "rentalDeals" ? NumberConversion(dataTotals.rentListingValue) :
+                  totals={selectedLeader.value == "saleDeals" ? NumberConversion(dataTotals.saleCommission) : (selectedLeader.value == "rentalDeals" ? NumberConversion(dataTotals.rentCommission) :
                     (selectedLeader.value == "calls" ? dataTotals.phoneCalls : (selectedLeader.value == "viewings" ? dataTotals.noOfViewings :
                       (selectedLeader.value == "salesListing" ? dataTotals.saleListings : dataTotals.rentListings)
                     )))}
-                  commission={selectedLeader.value == "saleDeals" ? NumberConversion(dataTotals.saleCommission) : (selectedLeader.value == "rentalDeals" ?
-                    NumberConversion(dataTotals.rentCommission) : 0)}
+                  deals={selectedLeader.value == "saleDeals" ? NumberConversion(dataTotals.saleListingValue) : (selectedLeader.value == "rentalDeals" ?
+                    NumberConversion(dataTotals.rentListingValue) : 0)}
                   closed={selectedLeader.value == "saleDeals" ? dataTotals.saleListingsClosed : (selectedLeader.value == "rentalDeals" ? dataTotals.rentListingsClosed : 0)}
                   percentage={selectedLeader.value == "saleDeals" ? dataTotals.saleDealsPct : (selectedLeader.value == "rentalDeals" ? dataTotals.rentDealsPct :
                     (selectedLeader.value == "calls" ? dataTotals.callsPct : (selectedLeader.value == "viewings" ? dataTotals.viewingPct :

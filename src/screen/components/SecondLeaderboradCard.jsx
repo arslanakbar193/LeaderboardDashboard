@@ -6,19 +6,20 @@ import { LiaPercentageSolid } from "react-icons/lia";
 import { MdOutlineCall } from "react-icons/md";
 import { CiViewBoard } from "react-icons/ci";
 import { BiListUl } from "react-icons/bi";
+import AEDIcon from "../../images/aed-coin.png";
 
-const LeaderboradCard = ({ totals, commission, closed, percentage, selectedLeader }) => {
+const LeaderboradCard = ({ totals, deals, closed, percentage, selectedLeader }) => {
   const iconMap = {
-    saleDeals: <CiDollar />,
-    rentalDeals: <CiDollar />,
+    saleDeals: <BsCash />,
+    rentalDeals: <BsCash />,
     calls: <MdOutlineCall />,
     viewings: <CiViewBoard />,
     salesListing: <BiListUl />,
     rentalListing: <BiListUl />,
   };
   const titleMap = {
-    saleDeals: "Total Deals",
-    rentalDeals: "Total Deals",
+    saleDeals: "Total Commission",
+    rentalDeals: "Total Commission",
     calls: "Total Calls",
     viewings: "Total Viewing",
     salesListing: "Total Listing",
@@ -46,7 +47,7 @@ const LeaderboradCard = ({ totals, commission, closed, percentage, selectedLeade
         {renderCard(iconMap[selectedLeader.value], totals, titleMap[selectedLeader.value])}
         {isDealsDashboard &&
           <>
-            {renderCard(<BsCash />, commission, "Total Commission")}
+            {renderCard(<img src={AEDIcon} alt="AED" style={{ width: "25px", paddingBottom: "2px" }} />, deals, "Total Deals")}
             {renderCard(<MdLabelOutline />, closed, "Total Close")}
           </>
         }

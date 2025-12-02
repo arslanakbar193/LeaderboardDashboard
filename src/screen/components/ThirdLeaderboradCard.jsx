@@ -9,24 +9,17 @@ import { CiViewBoard } from "react-icons/ci";
 import { BiListUl } from "react-icons/bi";
 import Avatar from "../../images/avatar.png";
 import { NumberConversion } from '../components/common/CommonFunctions';
+import AEDIcon from "../../images/aed-coin.png";
 
 const ThirdLeaderboardCard = ({ data, selectedLeader }) => {
   const [filteredData, setFilteredData] = useState([]);
   const iconMap = {
-    saleDeals: <CiDollar style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-    rentalDeals: <CiDollar style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
+    saleDeals: <BsCash style={{ color: "#1f7bc1", fontSize: "25px", paddingBottom: "2px" }} />,
+    rentalDeals: <BsCash style={{ color: "#1f7bc1", fontSize: "25px", paddingBottom: "2px" }} />,
     calls: <MdOutlineCall style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
     viewings: <CiViewBoard style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
     salesListing: <BiListUl style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
     rentalListing: <BiListUl style={{ color: "rgb(31, 123, 193)", fontSize: "25px" }} />,
-  };
-  const titleMap = {
-    saleDeals: "Total Deals",
-    rentalDeals: "Total Deals",
-    calls: "Total Calls",
-    viewings: "Total Viewings",
-    salesListing: "Total Listing",
-    rentalListing: "Total Listing",
   };
 
   const isDealsDashboard = ["leaders", "saleDeals", "rentalDeals"].includes(
@@ -35,8 +28,8 @@ const ThirdLeaderboardCard = ({ data, selectedLeader }) => {
 
   useEffect(() => {
     const valueKeyMap = {
-      saleDeals: "saleListingValue",
-      rentalDeals: "rentListingValue",
+      saleDeals: "salecommission",
+      rentalDeals: "rentcommission",
       calls: "phoneCalls",
       viewings: "noOfViewings",
       salesListing: "saleListings",
@@ -99,7 +92,7 @@ const ThirdLeaderboardCard = ({ data, selectedLeader }) => {
                   className={`flex deals-info justify-between ${!isDealsDashboard ? "start-items" : ""}`} >
                   <div className="flex align-center pl-5">
                     {iconMap[selectedLeader.value]}
-                    <span>{selectedLeader.value == "saleDeals" ? NumberConversion(item.saleListingValue) : (selectedLeader.value == "rentalDeals" ? NumberConversion(item.rentListingValue) :
+                    <span>{selectedLeader.value == "saleDeals" ? NumberConversion(item.salecommission) : (selectedLeader.value == "rentalDeals" ? NumberConversion(item.rentcommission) :
                       (selectedLeader.value == "calls" ? item.phoneCalls : (selectedLeader.value == "viewings" ? item.noOfViewings :
                         (selectedLeader.value == "salesListing" ? item.saleListings : item.rentListings)
                       )))}</span>
@@ -107,8 +100,8 @@ const ThirdLeaderboardCard = ({ data, selectedLeader }) => {
                   {isDealsDashboard && (
                     <>
                       <div className="flex align-center pl-5">
-                        <BsCash style={{ fontSize: "25", color: "#1f7bc1" }} />
-                        <span>{selectedLeader.value == "saleDeals" ? NumberConversion(item.salecommission) : NumberConversion(item.rentcommission)}</span>
+                        <img src={AEDIcon} alt="AED" style={{ width: "21px", paddingBottom: "5px" }} />
+                        <span>{selectedLeader.value == "saleDeals" ? NumberConversion(item.saleListingValue) : NumberConversion(item.rentListingValue)}</span>
                       </div>
 
                       <div className="flex align-center label-image">

@@ -12,16 +12,16 @@ import { NumberConversion } from '../components/common/CommonFunctions';
 const LeaderboradCard = ({ data, selectedLeader }) => {
   const [filteredData, setFilteredData] = useState([]);
   const iconMap = {
-    saleDeals: <img src={AEDIcon} alt="AED" style={{ width: "50px" }} />,
-    rentalDeals: <img src={AEDIcon} alt="AED" style={{ width: "50px" }} />,
+    saleDeals: <BsCash style={{ fontSize: "50px", paddingRight: "10px" }} />,
+    rentalDeals: <BsCash style={{ fontSize: "50px", paddingRight: "10px" }} />,
     leaders: <img src={AEDIcon} alt="AED" style={{ width: "50px" }} />,
     calls: <MdOutlineCall style={{ fontSize: "50px" }} />,
     viewings: <CiViewBoard style={{ fontSize: "50px" }} />,
     leaders4: <BiListUl style={{ fontSize: "50px" }} />,
   };
   const titleMap = {
-    saleDeals: "Total Deals",
-    rentalDeals: "Total Deals",
+    saleDeals: "Commission",
+    rentalDeals: "Commission",
     calls: "Total Calls",
     viewings: "Total Viewings",
     salesListing: "Total Listing",
@@ -33,8 +33,8 @@ const LeaderboradCard = ({ data, selectedLeader }) => {
   );
 
   const sortKeyMap = {
-    saleDeals: "saleListingValue",
-    rentalDeals: "rentListingValue",
+    saleDeals: "salecommission",
+    rentalDeals: "rentcommission",
     calls: "phoneCalls",
     viewings: "noOfViewings",
     salesListing: "saleListings",
@@ -52,8 +52,8 @@ const LeaderboradCard = ({ data, selectedLeader }) => {
 
   const getValue = (item, selectedLeaderValue) => {
     const valueMap = {
-      saleDeals: item.saleListingValue,
-      rentalDeals: item.rentListingValue,
+      saleDeals: item.salecommission,
+      rentalDeals: item.rentcommission,
       calls: item.phoneCalls,
       viewings: item.noOfViewings,
       salesListing: item.saleListings,
@@ -111,10 +111,8 @@ const LeaderboradCard = ({ data, selectedLeader }) => {
                   {isDealsDashboard && (
                     <>
                       <div className="flex align-center">
-                        <BsCash
-                          style={{ fontSize: "25px", color: "#1f7bc1" }}
-                        />
-                        <span>{selectedLeader.value == "saleDeals" ? NumberConversion(item.salecommission) : NumberConversion(item.rentcommission)}</span>
+                        <img src={AEDIcon} alt="AED" style={{ width: "25px", paddingBottom: "8px" }} />
+                        <span>{selectedLeader.value == "saleDeals" ? NumberConversion(item.saleListingValue) : NumberConversion(item.rentListingValue)}</span>
                       </div>
                       <div className="flex align-center label-image">
                         <MdLabelOutline
@@ -134,7 +132,7 @@ const LeaderboradCard = ({ data, selectedLeader }) => {
                   {isDealsDashboard && (
                     <>
                       <div className="flex align-center">
-                        <span className="status">Commission</span>
+                        <span className="status">Total Deals</span>
                       </div>
                       <div className="flex align-center label-image">
                         <span className="status">Closed</span>
