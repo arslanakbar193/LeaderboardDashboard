@@ -96,6 +96,14 @@ const LeaderBoardDashboard = () => {
                 field: "branch_id",
                 value: selectedOption.value,
               },
+              {
+                field: "user_id",
+                value: opener.parent.application.context.get_userId(),
+              },
+              {
+                field: "country_id",
+                value: opener.parent.application.context._currentCountry,
+              },
             ],
           },
         };
