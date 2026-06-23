@@ -15,9 +15,9 @@ import AverageResponseTimeReport from "./AverageResponseTimeReport";
 import { NumberConversion, fetchWithTokenRetry } from '../components/common/CommonFunctions';
 import FullscreenToggle from "../components/FullScreen";
 import { HiDocumentReport, HiOutlineDocumentReport } from "react-icons/hi";
-
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import MonthYearRangePicker from "./MonthYearPicker";
+import ListingPerformanceReport from "./ListingPerformanceReport";
 
 const LeaderBoardDashboard = () => {
   const [apiUrl , setApiUrl] = useState('');
@@ -35,6 +35,7 @@ const LeaderBoardDashboard = () => {
   const [dataTotals, setDataTotals] = useState({});
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);
+  const [listingPerformanceReportData, setListingPerformanceReportData] = useState([]);
   const [startMonth, setStartMonth] = useState(() => {
     const currentDate = new Date();
     const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -384,106 +385,142 @@ const LeaderBoardDashboard = () => {
         } else if (selectedLeader.value === "averageresponsetimereport") {
           const data = await getAverageResponseTimeReport();
           setaverageResponseTimeReportData(data);
-        }        
+        }  else if (selectedLeader.value === "saleListingPerformance") {
+          const data = await getListingPerformanceReport(1);
+          setListingPerformanceReportData(data);
+        } else if (selectedLeader.value === "rentListingPerformance") {
+          const data = await getListingPerformanceReport(2);
+          setListingPerformanceReportData(data);
+        }      
       }
     };
     fetchData();
   }, [startMonth, endMonth, selectedLeader.value,selectedOption]); 
   
-  const getLeadSourceReport = async () =>
-    {      
-      try {
-        const DashboardGraph = {
-         id: opener.parent.application.context.get_userId(),
-          startDate: formatDateToISOString(startMonth),
-          endDate: formatDateToISOString(new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 0)),
-        };
-        const response = await fetchWithTokenRetry(
-          apiUrl + '/graph/leadssource',
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              'Authorization': token
-            },
-            body: JSON.stringify(DashboardGraph),
-          }
-        );
-        if (response && response.ok) {
-          const responseJson = await response.json();
-          console.log(responseJson);
-          return responseJson;
+    const getLeadSourceReport = async () =>
+    {
+    try {
+      const DashboardGraph = {
+        id: opener.parent.application.context.get_userId(),
+        startDate: formatDateToISOString(startMonth),
+        endDate: formatDateToISOString(new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 0)),
+      };
+      const response = await fetchWithTokenRetry(
+        apiUrl + '/graph/leadssource',
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': token
+          },
+          body: JSON.stringify(DashboardGraph),
         }
-      } catch (error) {
-        console.error("Error fetching lead source report:", error);
-       return {};
+      );
+      if (response && response.ok) {
+        const responseJson = await response.json();
+        return responseJson;
       }
-    };
+    } catch (error) {
+      console.error("Error fetching lead source report:", error);
+      return {};
+    }
+  };
 
     const getAgentWiseLeadReport = async () =>
-      {      
-        try {
-          const selectedIds = selectedOption.value === 0
-          ? dropdownOptions.filter(option => option.value !== 0).map(option => option.value).join(',')
-          : selectedOption.value;
+    {
+    try {
+      const selectedIds = selectedOption.value === 0
+        ? dropdownOptions.filter(option => option.value !== 0).map(option => option.value).join(',')
+        : selectedOption.value;
 
-          const DashboardGraph = {
-            id: opener.parent.application.context.get_userId(),
-            startDate: formatDateToISOString(startMonth),
-            endDate: formatDateToISOString(new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 0)),
-            branch: selectedIds,
-          };
-          const response = await fetchWithTokenRetry(
-            apiUrl + '/graph/agentwiseleadreport',
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                'Authorization': token
-              },
-              body: JSON.stringify(DashboardGraph),
-            }
-          );
-          if (response && response.ok) {
-            const responseJson = await response.json();
-            console.log(responseJson);
-            return responseJson;
-          }
-        } catch (error) {
-          console.error("Error fetching agent wise lead report:", error);
-         return {};
-        }
+      const DashboardGraph = {
+        id: opener.parent.application.context.get_userId(),
+        startDate: formatDateToISOString(startMonth),
+        endDate: formatDateToISOString(new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 0)),
+        branch: selectedIds,
       };
-      
-      const getAverageResponseTimeReport = async () =>
-        {      
-          try {
-            const DashboardGraph = {
-             id: opener.parent.application.context.get_userId(),
-              startDate: formatDateToISOString(startMonth),
-              endDate: formatDateToISOString(new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 0)),
-            };
-            const response = await fetchWithTokenRetry(
-              apiUrl + '/averageresponsetimereport',
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  'Authorization': token
-                },
-                body: JSON.stringify(DashboardGraph),
-              }
-            );
-            if (response && response.ok) {
-              const responseJson = await response.json();
-              console.log(responseJson);
-              return responseJson;
-            }
-          } catch (error) {
-            console.error("Error fetching avergae response time report:", error);
-           return {};
-          }
-        };
+      const response = await fetchWithTokenRetry(
+        apiUrl + '/graph/agentwiseleadreport',
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': token
+          },
+          body: JSON.stringify(DashboardGraph),
+        }
+      );
+      if (response && response.ok) {
+        const responseJson = await response.json();
+        return responseJson;
+      }
+    } catch (error) {
+      console.error("Error fetching agent wise lead report:", error);
+      return {};
+    }
+  };
+
+    const getAverageResponseTimeReport = async () =>
+    {
+    try {
+      const DashboardGraph = {
+        id: opener.parent.application.context.get_userId(),
+        startDate: formatDateToISOString(startMonth),
+        endDate: formatDateToISOString(new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 0)),
+      };
+      const response = await fetchWithTokenRetry(
+        apiUrl + '/averageresponsetimereport',
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': token
+          },
+          body: JSON.stringify(DashboardGraph),
+        }
+      );
+      if (response && response.ok) {
+        const responseJson = await response.json();
+        return responseJson;
+      }
+    } catch (error) {
+      console.error("Error fetching avergae response time report:", error);
+      return {};
+    }
+  };
+
+  const getListingPerformanceReport = async (type) => {
+    try {
+      const selectedIds = selectedOption.value === 0
+        ? dropdownOptions.filter(option => option.value !== 0).map(option => option.value).join(',')
+        : selectedOption.value;
+
+      const DashboardGraph = {
+        id: opener.parent.application.context.get_userId(),
+        startDate: formatDateToISOString(startMonth),
+        endDate: formatDateToISOString(new Date(endMonth.getFullYear(), endMonth.getMonth() + 1, 0)),
+        branch: selectedIds,
+      };
+      const response = await fetchWithTokenRetry(
+        apiUrl + '/graph/listingperformancereport/' + type,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': token
+          },
+          body: JSON.stringify(DashboardGraph),
+        }
+      );
+      if (response && response.ok) {
+        const responseJson = await response.json();
+        return responseJson;
+      }
+    } catch (error) {
+      console.error("Error fetching Listing Performance Report:", error);
+      return {};
+    }
+  };
   return (
     <>
       <div className="container-fluid">
@@ -614,6 +651,10 @@ const LeaderBoardDashboard = () => {
               <LeadSourceReport data={leadSourceReportData} />
             ) : selectedLeader.value === "totalDashboard" ? (
               <TotalDashboard data={sampleData} />
+            ) : selectedLeader.value === "saleListingPerformance" ? (
+              <ListingPerformanceReport data={listingPerformanceReportData}/>
+            ) : selectedLeader.value === "rentListingPerformance" ? (
+              <ListingPerformanceReport data={listingPerformanceReportData}/>
             ) : loading ? ( // Display loading state
               <div className="loading">
                 <div className="dot dot1"></div>
@@ -946,6 +987,15 @@ const leaderOptions = [
     value: "averageresponsetimereport",
     icon: <HiOutlineDocumentReport />,
   },
+  {
+    label: "Listing Report",
+    value: "listingperformancereport",
+    icon: <HiOutlineDocumentReport />,
+    subOptions: [
+      { label: "Sale Listing", value: "saleListingPerformance" },
+      { label: "Rental Listing", value: "rentListingPerformance" },
+    ],
+  }
 ];
 
 // const everyoneOptions = [
